@@ -1,0 +1,9 @@
+#!/bin/bash
+
+
+echo <<EOF | scripts/compose exec -t netbox /opt/netbox/netbox/manage.py nbshell
+wh = Webhook(name="Netbox Deployer", payload_url="http://host.docker.internal/api/update")
+wh.full_clean()
+wh.save()
+EOF
+

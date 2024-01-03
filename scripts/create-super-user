@@ -1,0 +1,3 @@
+#!/bin/bash
+
+scripts/compose exec netbox /opt/netbox/netbox/manage.py createsuperuser

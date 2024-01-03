@@ -1,0 +1,31 @@
+#!/bin/bash
+
+script="
+from extras.choices import EventRuleActionChoices
+
+# Create webhook
+wh = Webhook(name='Netbox Deployer', payload_url='http://host.docker.internal/api/update')
+wh.full_clean()
+wh.save()
+
+# Create event rule
+er = EventRule(
+    name='Netbox Deployer',
+    action_object=wh,
+    enabled=True,
+    type_create=True,
+    type_update=True,
+    type_delete=True,
+    type_job_start=False,
+    type_job_end=False,
+    action_type=EventRuleActionChoices.WEBHOOK,
+)
+er.full_clean()
+er.save()
+
+for ct in ContentType.objects.all():
+    er.content_types.add(ct)
+"
+
+echo "$script" | scripts/compose exec -T netbox /opt/netbox/netbox/manage.py nbshell
+

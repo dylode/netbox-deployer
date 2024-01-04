@@ -1,7 +1,19 @@
 package main
 
-import "fmt"
+import (
+	"os"
+
+	"dylaan.nl/netbox-deployer/cmd/nbdeploy"
+)
 
 func main() {
-	fmt.Println("hello world")
+	if err := run(os.Args[1:]); err != nil {
+		os.Exit(1)
+	}
+}
+
+func run(args []string) error {
+	cmd := nbdeploy.NewCommand()
+	cmd.SetArgs(args)
+	return cmd.Execute()
 }

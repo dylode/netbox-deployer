@@ -1,8 +1,13 @@
 package worker
 
-import "fmt"
+import "dylaan.nl/netbox-deployer/internal/app/worker/api"
 
 func Run(args []string) error {
-	fmt.Println("Hello world!")
-	return nil
+	apiConfig := api.NewConfig().
+		WithHost("10.10.10.1").
+		WithPort(8080)
+
+	api := api.New(apiConfig)
+
+	return api.Run()
 }

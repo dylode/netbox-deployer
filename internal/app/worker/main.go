@@ -11,13 +11,13 @@ import (
 	"dylaan.nl/netbox-deployer/internal/app/worker/api"
 )
 
-func Run(args []string) error {
+func Run(config Config) error {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT)
 	defer cancel()
 
 	apiConfig := api.NewConfig().
-		WithHost("10.10.10.1").
-		WithPort(8080)
+		WithHost(config.Worker.Host).
+		WithPort(config.Worker.Port)
 
 	api := api.New(apiConfig)
 

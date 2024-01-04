@@ -9,6 +9,8 @@ import (
 
 type api struct {
 	config Config
+
+	e *echo.Echo
 }
 
 func New(config Config) *api {
@@ -17,15 +19,19 @@ func New(config Config) *api {
 	}
 }
 
-func (api api) Run() error {
-	e := echo.New()
+func (api *api) Run() error {
+	api.e = echo.New()
 
-	apiRouter := e.Group("/api/v1")
+	apiRouter := api.e.Group("/api/v1")
 	apiRouter.POST("/update", api.update)
 
-	if err := e.Start(fmt.Sprintf("%s:%d", api.config.host, api.config.port)); err != http.ErrServerClosed {
+	if err := api.e.Start(fmt.Sprintf("%s:%d", api.config.host, api.config.port)); err != http.ErrServerClosed {
 		return err
 	}
 
 	return nil
+}
+
+func (api *api) Close() error {
+	return api.e.Close()
 }

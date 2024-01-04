@@ -1,6 +1,15 @@
-version: '3.4'
-  
+version: '3.8'
+
 services:
   netbox:
-    ports:
-      - 8000:8080
+    networks:
+      default:
+      development:
+        ipv4_address: 10.10.10.2
+
+networks:
+  development:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.10.10.0/24

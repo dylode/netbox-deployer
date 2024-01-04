@@ -4,7 +4,7 @@ script="
 from extras.choices import EventRuleActionChoices
 
 # Create webhook
-wh = Webhook(name='Netbox Deployer', payload_url='http://host.docker.internal/api/update')
+wh = Webhook(name='Netbox Deployer', payload_url='http://10.10.10.1/api/v1/update')
 wh.full_clean()
 wh.save()
 

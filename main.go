@@ -4,6 +4,8 @@ import (
 	"os"
 
 	"dylaan.nl/netbox-deployer/cmd/nbdeploy"
+
+	_ "github.com/Khan/genqlient"
 )
 
 //go:generate go run github.com/Khan/genqlient

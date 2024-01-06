@@ -3,6 +3,6 @@ schema: internal/pkg/netbox/schema.graphql
 operations:
 - internal/pkg/netbox/queries.graphql
 
-generated: internal/pkg/netbox/queries.go
+generated: internal/pkg/netbox/queries_generated.go
 
 package: netbox

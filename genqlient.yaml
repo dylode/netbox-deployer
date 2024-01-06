@@ -1,0 +1,8 @@
+schema: internal/pkg/netbox/schema.graphql
+
+operations:
+- internal/pkg/netbox/queries.graphql
+
+generated: internal/pkg/netbox/queries.go
+
+package: netbox

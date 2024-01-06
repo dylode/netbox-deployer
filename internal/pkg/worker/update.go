@@ -10,11 +10,6 @@ const (
 
 type UpdateModel string
 
-const (
-	Virtualization UpdateModel = "virtualization"
-	IPAM           UpdateModel = "ipam"
-)
-
 type UpdateModelID int
 
 type Update struct {

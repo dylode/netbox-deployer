@@ -12,6 +12,7 @@ import (
 
 func (api api) update(c echo.Context) error {
 	req := c.Request()
+	
 	body, err := io.ReadAll(req.Body)
 	if err != nil {
 		return err

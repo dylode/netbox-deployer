@@ -6,6 +6,8 @@ import (
 	"dylaan.nl/netbox-deployer/cmd/nbdeploy"
 )
 
+//go:generate go run github.com/Khan/genqlient
+
 func main() {
 	if err := run(os.Args[1:]); err != nil {
 		os.Exit(1)

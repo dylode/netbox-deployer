@@ -14,3 +14,11 @@ query test {
     status
   }
 }
+
+query getTypes {
+  __schema {
+    types {
+      name
+    }
+  }
+}

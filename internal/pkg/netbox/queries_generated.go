@@ -24,6 +24,30 @@ const (
 	IpamIPAddressStatusChoicesSlaac IpamIPAddressStatusChoices = "SLAAC"
 )
 
+// getTypesResponse is returned by getTypes on success.
+type getTypesResponse struct {
+	Schema getTypesSchema `json:"__schema"`
+}
+
+// GetSchema returns getTypesResponse.Schema, and is useful for accessing the field via an interface.
+func (v *getTypesResponse) GetSchema() getTypesSchema { return v.Schema }
+
+// getTypesSchema includes the requested fields of the GraphQL type __Schema.
+type getTypesSchema struct {
+	Types []getTypesSchemaTypesType `json:"types"`
+}
+
+// GetTypes returns getTypesSchema.Types, and is useful for accessing the field via an interface.
+func (v *getTypesSchema) GetTypes() []getTypesSchemaTypesType { return v.Types }
+
+// getTypesSchemaTypesType includes the requested fields of the GraphQL type __Type.
+type getTypesSchemaTypesType struct {
+	Name string `json:"name"`
+}
+
+// GetName returns getTypesSchemaTypesType.Name, and is useful for accessing the field via an interface.
+func (v *getTypesSchemaTypesType) GetName() string { return v.Name }
+
 // testIp_addressIPAddressType includes the requested fields of the GraphQL type IPAddressType.
 type testIp_addressIPAddressType struct {
 	Id string `json:"id"`
@@ -87,6 +111,39 @@ type testResponse struct {
 
 // GetIp_address returns testResponse.Ip_address, and is useful for accessing the field via an interface.
 func (v *testResponse) GetIp_address() testIp_addressIPAddressType { return v.Ip_address }
+
+// The query or mutation executed by getTypes.
+const getTypes_Operation = `
+query getTypes {
+	__schema {
+		types {
+			name
+		}
+	}
+}
+`
+
+func getTypes(
+	ctx context.Context,
+	client graphql.Client,
+) (*getTypesResponse, error) {
+	req := &graphql.Request{
+		OpName: "getTypes",
+		Query:  getTypes_Operation,
+	}
+	var err error
+
+	var data getTypesResponse
+	resp := &graphql.Response{Data: &data}
+
+	err = client.MakeRequest(
+		ctx,
+		req,
+		resp,
+	)
+
+	return &data, err
+}
 
 // The query or mutation executed by test.
 const test_Operation = `

@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 
@@ -12,7 +11,7 @@ import (
 
 func (api api) update(c echo.Context) error {
 	req := c.Request()
-	
+
 	body, err := io.ReadAll(req.Body)
 	if err != nil {
 		return err
@@ -23,7 +22,7 @@ func (api api) update(c echo.Context) error {
 		return err
 	}
 
-	fmt.Println(update)
+	api.updateChan <- update
 
 	return c.NoContent(http.StatusOK)
 }

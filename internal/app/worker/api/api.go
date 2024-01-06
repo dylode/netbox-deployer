@@ -4,24 +4,27 @@ import (
 	"fmt"
 	"net/http"
 
+	"dylaan.nl/netbox-deployer/internal/pkg/worker"
 	"github.com/labstack/echo"
 )
 
 type api struct {
 	config Config
 
-	e *echo.Echo
+	e          *echo.Echo
+	updateChan chan worker.Update
 }
 
-func New(config Config) *api {
+func New(config Config, updateChan chan worker.Update) *api {
 	return &api{
 		config: config,
+
+		e:          echo.New(),
+		updateChan: updateChan,
 	}
 }
 
 func (api *api) Run() error {
-	api.e = echo.New()
-
 	apiRouter := api.e.Group("/api/v1")
 	apiRouter.POST("/update", api.update)
 

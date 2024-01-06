@@ -8,6 +8,8 @@ type Config struct {
 	Worker struct {
 		Host string `mapstructure:"host"`
 		Port int    `mapstructure:"port"`
+
+		GraphqlURL string `mapstructure:"graphql_url"`
 	} `mapstructure:"worker"`
 }
 

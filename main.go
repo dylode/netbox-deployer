@@ -7,6 +7,7 @@ import (
 )
 
 //go:generate go run github.com/Khan/genqlient
+//go:generate go run ./internal/app/worker/resolver/scheme/generate.go
 
 func main() {
 	if err := run(os.Args[1:]); err != nil {

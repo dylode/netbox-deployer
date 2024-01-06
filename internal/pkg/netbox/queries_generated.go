@@ -8,113 +8,108 @@ import (
 	"github.com/Khan/genqlient/graphql"
 )
 
-// An enumeration.
-type IpamIPAddressStatusChoices string
+// GetAllTypesResponse is returned by GetAllTypes on success.
+type GetAllTypesResponse struct {
+	Schema GetAllTypesSchema `json:"__schema"`
+}
+
+// GetSchema returns GetAllTypesResponse.Schema, and is useful for accessing the field via an interface.
+func (v *GetAllTypesResponse) GetSchema() GetAllTypesSchema { return v.Schema }
+
+// GetAllTypesSchema includes the requested fields of the GraphQL type __Schema.
+type GetAllTypesSchema struct {
+	Types []GetAllTypesSchemaTypesType `json:"types"`
+}
+
+// GetTypes returns GetAllTypesSchema.Types, and is useful for accessing the field via an interface.
+func (v *GetAllTypesSchema) GetTypes() []GetAllTypesSchemaTypesType { return v.Types }
+
+// GetAllTypesSchemaTypesType includes the requested fields of the GraphQL type __Type.
+type GetAllTypesSchemaTypesType struct {
+	Name string `json:"name"`
+}
+
+// GetName returns GetAllTypesSchemaTypesType.Name, and is useful for accessing the field via an interface.
+func (v *GetAllTypesSchemaTypesType) GetName() string { return v.Name }
+
+// GetTypeInfoResponse is returned by GetTypeInfo on success.
+type GetTypeInfoResponse struct {
+	Type GetTypeInfoType `json:"__type"`
+}
+
+// GetType returns GetTypeInfoResponse.Type, and is useful for accessing the field via an interface.
+func (v *GetTypeInfoResponse) GetType() GetTypeInfoType { return v.Type }
+
+// GetTypeInfoType includes the requested fields of the GraphQL type __Type.
+type GetTypeInfoType struct {
+	Name   string                       `json:"name"`
+	Fields []GetTypeInfoTypeFieldsField `json:"fields"`
+}
+
+// GetName returns GetTypeInfoType.Name, and is useful for accessing the field via an interface.
+func (v *GetTypeInfoType) GetName() string { return v.Name }
+
+// GetFields returns GetTypeInfoType.Fields, and is useful for accessing the field via an interface.
+func (v *GetTypeInfoType) GetFields() []GetTypeInfoTypeFieldsField { return v.Fields }
+
+// GetTypeInfoTypeFieldsField includes the requested fields of the GraphQL type __Field.
+type GetTypeInfoTypeFieldsField struct {
+	Name string                         `json:"name"`
+	Type GetTypeInfoTypeFieldsFieldType `json:"type"`
+}
+
+// GetName returns GetTypeInfoTypeFieldsField.Name, and is useful for accessing the field via an interface.
+func (v *GetTypeInfoTypeFieldsField) GetName() string { return v.Name }
+
+// GetType returns GetTypeInfoTypeFieldsField.Type, and is useful for accessing the field via an interface.
+func (v *GetTypeInfoTypeFieldsField) GetType() GetTypeInfoTypeFieldsFieldType { return v.Type }
+
+// GetTypeInfoTypeFieldsFieldType includes the requested fields of the GraphQL type __Type.
+type GetTypeInfoTypeFieldsFieldType struct {
+	Name   string                               `json:"name"`
+	Kind   TypeKind                             `json:"kind"`
+	OfType GetTypeInfoTypeFieldsFieldTypeOfType `json:"ofType"`
+}
+
+// GetName returns GetTypeInfoTypeFieldsFieldType.Name, and is useful for accessing the field via an interface.
+func (v *GetTypeInfoTypeFieldsFieldType) GetName() string { return v.Name }
+
+// GetKind returns GetTypeInfoTypeFieldsFieldType.Kind, and is useful for accessing the field via an interface.
+func (v *GetTypeInfoTypeFieldsFieldType) GetKind() TypeKind { return v.Kind }
+
+// GetOfType returns GetTypeInfoTypeFieldsFieldType.OfType, and is useful for accessing the field via an interface.
+func (v *GetTypeInfoTypeFieldsFieldType) GetOfType() GetTypeInfoTypeFieldsFieldTypeOfType {
+	return v.OfType
+}
+
+// GetTypeInfoTypeFieldsFieldTypeOfType includes the requested fields of the GraphQL type __Type.
+type GetTypeInfoTypeFieldsFieldTypeOfType struct {
+	Name string   `json:"name"`
+	Kind TypeKind `json:"kind"`
+}
+
+// GetName returns GetTypeInfoTypeFieldsFieldTypeOfType.Name, and is useful for accessing the field via an interface.
+func (v *GetTypeInfoTypeFieldsFieldTypeOfType) GetName() string { return v.Name }
+
+// GetKind returns GetTypeInfoTypeFieldsFieldTypeOfType.Kind, and is useful for accessing the field via an interface.
+func (v *GetTypeInfoTypeFieldsFieldTypeOfType) GetKind() TypeKind { return v.Kind }
+
+type TypeKind string
 
 const (
-	// Active
-	IpamIPAddressStatusChoicesActive IpamIPAddressStatusChoices = "ACTIVE"
-	// Reserved
-	IpamIPAddressStatusChoicesReserved IpamIPAddressStatusChoices = "RESERVED"
-	// Deprecated
-	IpamIPAddressStatusChoicesDeprecated IpamIPAddressStatusChoices = "DEPRECATED"
-	// DHCP
-	IpamIPAddressStatusChoicesDhcp IpamIPAddressStatusChoices = "DHCP"
-	// SLAAC
-	IpamIPAddressStatusChoicesSlaac IpamIPAddressStatusChoices = "SLAAC"
+	TypeKindScalar      TypeKind = "SCALAR"
+	TypeKindObject      TypeKind = "OBJECT"
+	TypeKindInterface   TypeKind = "INTERFACE"
+	TypeKindUnion       TypeKind = "UNION"
+	TypeKindEnum        TypeKind = "ENUM"
+	TypeKindInputObject TypeKind = "INPUT_OBJECT"
+	TypeKindList        TypeKind = "LIST"
+	TypeKindNonNull     TypeKind = "NON_NULL"
 )
 
-// getTypesResponse is returned by getTypes on success.
-type getTypesResponse struct {
-	Schema getTypesSchema `json:"__schema"`
-}
-
-// GetSchema returns getTypesResponse.Schema, and is useful for accessing the field via an interface.
-func (v *getTypesResponse) GetSchema() getTypesSchema { return v.Schema }
-
-// getTypesSchema includes the requested fields of the GraphQL type __Schema.
-type getTypesSchema struct {
-	Types []getTypesSchemaTypesType `json:"types"`
-}
-
-// GetTypes returns getTypesSchema.Types, and is useful for accessing the field via an interface.
-func (v *getTypesSchema) GetTypes() []getTypesSchemaTypesType { return v.Types }
-
-// getTypesSchemaTypesType includes the requested fields of the GraphQL type __Type.
-type getTypesSchemaTypesType struct {
-	Name string `json:"name"`
-}
-
-// GetName returns getTypesSchemaTypesType.Name, and is useful for accessing the field via an interface.
-func (v *getTypesSchemaTypesType) GetName() string { return v.Name }
-
-// testIp_addressIPAddressType includes the requested fields of the GraphQL type IPAddressType.
-type testIp_addressIPAddressType struct {
-	Id string `json:"id"`
-	// IPv4 or IPv6 address (with mask)
-	Address     string                                      `json:"address"`
-	Description string                                      `json:"description"`
-	Vrf         testIp_addressIPAddressTypeVrfVRFType       `json:"vrf"`
-	Tenant      testIp_addressIPAddressTypeTenantTenantType `json:"tenant"`
-	// The operational status of this IP
-	Status IpamIPAddressStatusChoices `json:"status"`
-}
-
-// GetId returns testIp_addressIPAddressType.Id, and is useful for accessing the field via an interface.
-func (v *testIp_addressIPAddressType) GetId() string { return v.Id }
-
-// GetAddress returns testIp_addressIPAddressType.Address, and is useful for accessing the field via an interface.
-func (v *testIp_addressIPAddressType) GetAddress() string { return v.Address }
-
-// GetDescription returns testIp_addressIPAddressType.Description, and is useful for accessing the field via an interface.
-func (v *testIp_addressIPAddressType) GetDescription() string { return v.Description }
-
-// GetVrf returns testIp_addressIPAddressType.Vrf, and is useful for accessing the field via an interface.
-func (v *testIp_addressIPAddressType) GetVrf() testIp_addressIPAddressTypeVrfVRFType { return v.Vrf }
-
-// GetTenant returns testIp_addressIPAddressType.Tenant, and is useful for accessing the field via an interface.
-func (v *testIp_addressIPAddressType) GetTenant() testIp_addressIPAddressTypeTenantTenantType {
-	return v.Tenant
-}
-
-// GetStatus returns testIp_addressIPAddressType.Status, and is useful for accessing the field via an interface.
-func (v *testIp_addressIPAddressType) GetStatus() IpamIPAddressStatusChoices { return v.Status }
-
-// testIp_addressIPAddressTypeTenantTenantType includes the requested fields of the GraphQL type TenantType.
-type testIp_addressIPAddressTypeTenantTenantType struct {
-	Id   string `json:"id"`
-	Name string `json:"name"`
-}
-
-// GetId returns testIp_addressIPAddressTypeTenantTenantType.Id, and is useful for accessing the field via an interface.
-func (v *testIp_addressIPAddressTypeTenantTenantType) GetId() string { return v.Id }
-
-// GetName returns testIp_addressIPAddressTypeTenantTenantType.Name, and is useful for accessing the field via an interface.
-func (v *testIp_addressIPAddressTypeTenantTenantType) GetName() string { return v.Name }
-
-// testIp_addressIPAddressTypeVrfVRFType includes the requested fields of the GraphQL type VRFType.
-type testIp_addressIPAddressTypeVrfVRFType struct {
-	Id   string `json:"id"`
-	Name string `json:"name"`
-}
-
-// GetId returns testIp_addressIPAddressTypeVrfVRFType.Id, and is useful for accessing the field via an interface.
-func (v *testIp_addressIPAddressTypeVrfVRFType) GetId() string { return v.Id }
-
-// GetName returns testIp_addressIPAddressTypeVrfVRFType.Name, and is useful for accessing the field via an interface.
-func (v *testIp_addressIPAddressTypeVrfVRFType) GetName() string { return v.Name }
-
-// testResponse is returned by test on success.
-type testResponse struct {
-	Ip_address testIp_addressIPAddressType `json:"ip_address"`
-}
-
-// GetIp_address returns testResponse.Ip_address, and is useful for accessing the field via an interface.
-func (v *testResponse) GetIp_address() testIp_addressIPAddressType { return v.Ip_address }
-
-// The query or mutation executed by getTypes.
-const getTypes_Operation = `
-query getTypes {
+// The query or mutation executed by GetAllTypes.
+const GetAllTypes_Operation = `
+query GetAllTypes {
 	__schema {
 		types {
 			name
@@ -123,17 +118,17 @@ query getTypes {
 }
 `
 
-func getTypes(
+func GetAllTypes(
 	ctx context.Context,
 	client graphql.Client,
-) (*getTypesResponse, error) {
+) (*GetAllTypesResponse, error) {
 	req := &graphql.Request{
-		OpName: "getTypes",
-		Query:  getTypes_Operation,
+		OpName: "GetAllTypes",
+		Query:  GetAllTypes_Operation,
 	}
 	var err error
 
-	var data getTypesResponse
+	var data GetAllTypesResponse
 	resp := &graphql.Response{Data: &data}
 
 	err = client.MakeRequest(
@@ -145,37 +140,37 @@ func getTypes(
 	return &data, err
 }
 
-// The query or mutation executed by test.
-const test_Operation = `
-query test {
-	ip_address(id: 2) {
-		id
-		address
-		description
-		vrf {
-			id
+// The query or mutation executed by GetTypeInfo.
+const GetTypeInfo_Operation = `
+query GetTypeInfo {
+	__type(name: "IPAddressType") {
+		name
+		fields {
 			name
+			type {
+				name
+				kind
+				ofType {
+					name
+					kind
+				}
+			}
 		}
-		tenant {
-			id
-			name
-		}
-		status
 	}
 }
 `
 
-func test(
+func GetTypeInfo(
 	ctx context.Context,
 	client graphql.Client,
-) (*testResponse, error) {
+) (*GetTypeInfoResponse, error) {
 	req := &graphql.Request{
-		OpName: "test",
-		Query:  test_Operation,
+		OpName: "GetTypeInfo",
+		Query:  GetTypeInfo_Operation,
 	}
 	var err error
 
-	var data testResponse
+	var data GetTypeInfoResponse
 	resp := &graphql.Response{Data: &data}
 
 	err = client.MakeRequest(

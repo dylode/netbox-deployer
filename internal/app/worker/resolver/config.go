@@ -1,16 +1,16 @@
 package resolver
 
+import "github.com/Khan/genqlient/graphql"
+
 type Config struct {
-	graphqlURL string
+	client graphql.Client
 }
 
 func NewConfig() Config {
-	return Config{
-		graphqlURL: "",
-	}
+	return Config{}
 }
 
-func (c Config) WithGraphqlURL(url string) Config {
-	c.graphqlURL = url
+func (c Config) WithClient(client graphql.Client) Config {
+	c.client = client
 	return c
 }

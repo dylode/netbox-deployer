@@ -1,24 +1,24 @@
-query test {
-  ip_address(id: 2) {
-    id
-    address
-    description
-    vrf {
-      id
-      name
-    }
-    tenant {
-      id
-      name
-    }
-    status
-  }
-}
-
-query getTypes {
+query GetAllTypes {
   __schema {
     types {
       name
+    }
+  }
+}
+
+query GetTypeInfo {
+  __type(name: "IPAddressType") {
+    name
+    fields {
+      name
+      type {
+        name
+        kind
+        ofType {
+          name
+          kind
+        }
+      }
     }
   }
 }

@@ -3,6 +3,7 @@ package worker
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"os"
 	"os/signal"
 	"sync"
@@ -10,6 +11,7 @@ import (
 
 	"dylaan.nl/netbox-deployer/internal/app/worker/api"
 	"dylaan.nl/netbox-deployer/internal/app/worker/resolver"
+	"github.com/Khan/genqlient/graphql"
 )
 
 const errorChanSize = 10
@@ -19,8 +21,11 @@ func Run(config Config) error {
 	defer cancel()
 
 	// setup
+	httpClient := http.Client{}
+	graphqlClient := graphql.NewClient(config.Worker.GraphqlURL, &httpClient)
+
 	resolver := resolver.New(
-		resolver.NewConfig().WithGraphqlURL(config.Worker.GraphqlURL),
+		resolver.NewConfig().WithClient(graphqlClient),
 	)
 	api := api.New(
 		api.NewConfig().

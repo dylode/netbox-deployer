@@ -1,0 +1,1302 @@
+virtual_machine_list
+{ id
+tags
+{ id
+}
+config_template
+{ id
+tags
+{ id
+}
+data_source
+{ id
+tags
+{ id
+}
+journal_entries
+{ id
+tags
+{ id
+}
+created_by
+{ id
+}
+}
+}
+data_file
+{ id
+}
+}
+site
+{ id
+tags
+{ id
+}
+region
+{ id
+tags
+{ id
+}
+parent
+{ id
+}
+contacts
+{ id
+tags
+{ id
+}
+}
+vlan_groups
+{ id
+tags
+{ id
+}
+}
+}
+group
+{ id
+tags
+{ id
+}
+parent
+{ id
+}
+contacts
+{ id
+tags
+{ id
+}
+}
+vlan_groups
+{ id
+tags
+{ id
+}
+}
+}
+tenant
+{ id
+tags
+{ id
+}
+group
+{ id
+tags
+{ id
+}
+parent
+{ id
+}
+}
+journal_entries
+{ id
+tags
+{ id
+}
+created_by
+{ id
+}
+}
+}
+journal_entries
+{ id
+tags
+{ id
+}
+created_by
+{ id
+}
+}
+contacts
+{ id
+tags
+{ id
+}
+}
+image_attachments
+{ id
+}
+vlan_groups
+{ id
+tags
+{ id
+}
+}
+}
+cluster
+{ id
+tags
+{ id
+}
+group
+{ id
+tags
+{ id
+}
+vlan_groups
+{ id
+tags
+{ id
+}
+}
+}
+tenant
+{ id
+tags
+{ id
+}
+group
+{ id
+tags
+{ id
+}
+parent
+{ id
+}
+}
+journal_entries
+{ id
+tags
+{ id
+}
+created_by
+{ id
+}
+}
+}
+site
+{ id
+tags
+{ id
+}
+region
+{ id
+tags
+{ id
+}
+parent
+{ id
+}
+contacts
+{ id
+tags
+{ id
+}
+}
+vlan_groups
+{ id
+tags
+{ id
+}
+}
+}
+group
+{ id
+tags
+{ id
+}
+parent
+{ id
+}
+contacts
+{ id
+tags
+{ id
+}
+}
+vlan_groups
+{ id
+tags
+{ id
+}
+}
+}
+tenant
+{ id
+tags
+{ id
+}
+group
+{ id
+tags
+{ id
+}
+parent
+{ id
+}
+}
+journal_entries
+{ id
+tags
+{ id
+}
+created_by
+{ id
+}
+}
+}
+journal_entries
+{ id
+tags
+{ id
+}
+created_by
+{ id
+}
+}
+contacts
+{ id
+tags
+{ id
+}
+}
+image_attachments
+{ id
+}
+vlan_groups
+{ id
+tags
+{ id
+}
+}
+}
+journal_entries
+{ id
+tags
+{ id
+}
+created_by
+{ id
+}
+}
+vlan_groups
+{ id
+tags
+{ id
+}
+}
+}
+device
+{ id
+tags
+{ id
+}
+config_template
+{ id
+tags
+{ id
+}
+data_source
+{ id
+tags
+{ id
+}
+journal_entries
+{ id
+tags
+{ id
+}
+created_by
+{ id
+}
+}
+}
+data_file
+{ id
+}
+}
+tenant
+{ id
+tags
+{ id
+}
+group
+{ id
+tags
+{ id
+}
+parent
+{ id
+}
+}
+journal_entries
+{ id
+tags
+{ id
+}
+created_by
+{ id
+}
+}
+}
+platform
+{ id
+tags
+{ id
+}
+manufacturer
+{ id
+tags
+{ id
+}
+contacts
+{ id
+tags
+{ id
+}
+}
+}
+config_template
+{ id
+tags
+{ id
+}
+data_source
+{ id
+tags
+{ id
+}
+journal_entries
+{ id
+tags
+{ id
+}
+created_by
+{ id
+}
+}
+}
+data_file
+{ id
+}
+}
+}
+location
+{ id
+tags
+{ id
+}
+parent
+{ id
+}
+tenant
+{ id
+tags
+{ id
+}
+group
+{ id
+tags
+{ id
+}
+parent
+{ id
+}
+}
+journal_entries
+{ id
+tags
+{ id
+}
+created_by
+{ id
+}
+}
+}
+contacts
+{ id
+tags
+{ id
+}
+}
+image_attachments
+{ id
+}
+vlan_groups
+{ id
+tags
+{ id
+}
+}
+}
+rack
+{ id
+tags
+{ id
+}
+location
+{ id
+tags
+{ id
+}
+parent
+{ id
+}
+tenant
+{ id
+tags
+{ id
+}
+group
+{ id
+tags
+{ id
+}
+parent
+{ id
+}
+}
+journal_entries
+{ id
+tags
+{ id
+}
+created_by
+{ id
+}
+}
+}
+contacts
+{ id
+tags
+{ id
+}
+}
+image_attachments
+{ id
+}
+vlan_groups
+{ id
+tags
+{ id
+}
+}
+}
+tenant
+{ id
+tags
+{ id
+}
+group
+{ id
+tags
+{ id
+}
+parent
+{ id
+}
+}
+journal_entries
+{ id
+tags
+{ id
+}
+created_by
+{ id
+}
+}
+}
+role
+{ id
+tags
+{ id
+}
+}
+journal_entries
+{ id
+tags
+{ id
+}
+created_by
+{ id
+}
+}
+contacts
+{ id
+tags
+{ id
+}
+}
+image_attachments
+{ id
+}
+vlan_groups
+{ id
+tags
+{ id
+}
+}
+}
+primary_ip4
+{ id
+tags
+{ id
+}
+vrf
+{ id
+tags
+{ id
+}
+tenant
+{ id
+tags
+{ id
+}
+group
+{ id
+tags
+{ id
+}
+parent
+{ id
+}
+}
+journal_entries
+{ id
+tags
+{ id
+}
+created_by
+{ id
+}
+}
+}
+journal_entries
+{ id
+tags
+{ id
+}
+created_by
+{ id
+}
+}
+}
+tenant
+{ id
+tags
+{ id
+}
+group
+{ id
+tags
+{ id
+}
+parent
+{ id
+}
+}
+journal_entries
+{ id
+tags
+{ id
+}
+created_by
+{ id
+}
+}
+}
+nat_inside
+{ id
+}
+tunnel_termination
+{ id
+tags
+{ id
+}
+outside_ip
+{ id
+}
+}
+journal_entries
+{ id
+tags
+{ id
+}
+created_by
+{ id
+}
+}
+}
+primary_ip6
+{ id
+tags
+{ id
+}
+vrf
+{ id
+tags
+{ id
+}
+tenant
+{ id
+tags
+{ id
+}
+group
+{ id
+tags
+{ id
+}
+parent
+{ id
+}
+}
+journal_entries
+{ id
+tags
+{ id
+}
+created_by
+{ id
+}
+}
+}
+journal_entries
+{ id
+tags
+{ id
+}
+created_by
+{ id
+}
+}
+}
+tenant
+{ id
+tags
+{ id
+}
+group
+{ id
+tags
+{ id
+}
+parent
+{ id
+}
+}
+journal_entries
+{ id
+tags
+{ id
+}
+created_by
+{ id
+}
+}
+}
+nat_inside
+{ id
+}
+tunnel_termination
+{ id
+tags
+{ id
+}
+outside_ip
+{ id
+}
+}
+journal_entries
+{ id
+tags
+{ id
+}
+created_by
+{ id
+}
+}
+}
+oob_ip
+{ id
+tags
+{ id
+}
+vrf
+{ id
+tags
+{ id
+}
+tenant
+{ id
+tags
+{ id
+}
+group
+{ id
+tags
+{ id
+}
+parent
+{ id
+}
+}
+journal_entries
+{ id
+tags
+{ id
+}
+created_by
+{ id
+}
+}
+}
+journal_entries
+{ id
+tags
+{ id
+}
+created_by
+{ id
+}
+}
+}
+tenant
+{ id
+tags
+{ id
+}
+group
+{ id
+tags
+{ id
+}
+parent
+{ id
+}
+}
+journal_entries
+{ id
+tags
+{ id
+}
+created_by
+{ id
+}
+}
+}
+nat_inside
+{ id
+}
+tunnel_termination
+{ id
+tags
+{ id
+}
+outside_ip
+{ id
+}
+}
+journal_entries
+{ id
+tags
+{ id
+}
+created_by
+{ id
+}
+}
+}
+cluster
+{ id
+tags
+{ id
+}
+group
+{ id
+tags
+{ id
+}
+vlan_groups
+{ id
+tags
+{ id
+}
+}
+}
+tenant
+{ id
+tags
+{ id
+}
+group
+{ id
+tags
+{ id
+}
+parent
+{ id
+}
+}
+journal_entries
+{ id
+tags
+{ id
+}
+created_by
+{ id
+}
+}
+}
+site
+{ id
+tags
+{ id
+}
+region
+{ id
+tags
+{ id
+}
+parent
+{ id
+}
+contacts
+{ id
+tags
+{ id
+}
+}
+vlan_groups
+{ id
+tags
+{ id
+}
+}
+}
+group
+{ id
+tags
+{ id
+}
+parent
+{ id
+}
+contacts
+{ id
+tags
+{ id
+}
+}
+vlan_groups
+{ id
+tags
+{ id
+}
+}
+}
+tenant
+{ id
+tags
+{ id
+}
+group
+{ id
+tags
+{ id
+}
+parent
+{ id
+}
+}
+journal_entries
+{ id
+tags
+{ id
+}
+created_by
+{ id
+}
+}
+}
+journal_entries
+{ id
+tags
+{ id
+}
+created_by
+{ id
+}
+}
+contacts
+{ id
+tags
+{ id
+}
+}
+image_attachments
+{ id
+}
+vlan_groups
+{ id
+tags
+{ id
+}
+}
+}
+journal_entries
+{ id
+tags
+{ id
+}
+created_by
+{ id
+}
+}
+vlan_groups
+{ id
+tags
+{ id
+}
+}
+}
+virtual_chassis
+{ id
+tags
+{ id
+}
+master
+{ id
+}
+journal_entries
+{ id
+tags
+{ id
+}
+created_by
+{ id
+}
+}
+}
+parent_bay
+{ id
+tags
+{ id
+}
+installed_device
+{ id
+}
+}
+vc_master_for
+{ id
+tags
+{ id
+}
+master
+{ id
+}
+journal_entries
+{ id
+tags
+{ id
+}
+created_by
+{ id
+}
+}
+}
+journal_entries
+{ id
+tags
+{ id
+}
+created_by
+{ id
+}
+}
+contacts
+{ id
+tags
+{ id
+}
+}
+image_attachments
+{ id
+}
+}
+tenant
+{ id
+tags
+{ id
+}
+group
+{ id
+tags
+{ id
+}
+parent
+{ id
+}
+}
+journal_entries
+{ id
+tags
+{ id
+}
+created_by
+{ id
+}
+}
+}
+platform
+{ id
+tags
+{ id
+}
+manufacturer
+{ id
+tags
+{ id
+}
+contacts
+{ id
+tags
+{ id
+}
+}
+}
+config_template
+{ id
+tags
+{ id
+}
+data_source
+{ id
+tags
+{ id
+}
+journal_entries
+{ id
+tags
+{ id
+}
+created_by
+{ id
+}
+}
+}
+data_file
+{ id
+}
+}
+}
+role
+{ id
+tags
+{ id
+}
+config_template
+{ id
+tags
+{ id
+}
+data_source
+{ id
+tags
+{ id
+}
+journal_entries
+{ id
+tags
+{ id
+}
+created_by
+{ id
+}
+}
+}
+data_file
+{ id
+}
+}
+}
+primary_ip4
+{ id
+tags
+{ id
+}
+vrf
+{ id
+tags
+{ id
+}
+tenant
+{ id
+tags
+{ id
+}
+group
+{ id
+tags
+{ id
+}
+parent
+{ id
+}
+}
+journal_entries
+{ id
+tags
+{ id
+}
+created_by
+{ id
+}
+}
+}
+journal_entries
+{ id
+tags
+{ id
+}
+created_by
+{ id
+}
+}
+}
+tenant
+{ id
+tags
+{ id
+}
+group
+{ id
+tags
+{ id
+}
+parent
+{ id
+}
+}
+journal_entries
+{ id
+tags
+{ id
+}
+created_by
+{ id
+}
+}
+}
+nat_inside
+{ id
+}
+tunnel_termination
+{ id
+tags
+{ id
+}
+outside_ip
+{ id
+}
+}
+journal_entries
+{ id
+tags
+{ id
+}
+created_by
+{ id
+}
+}
+}
+primary_ip6
+{ id
+tags
+{ id
+}
+vrf
+{ id
+tags
+{ id
+}
+tenant
+{ id
+tags
+{ id
+}
+group
+{ id
+tags
+{ id
+}
+parent
+{ id
+}
+}
+journal_entries
+{ id
+tags
+{ id
+}
+created_by
+{ id
+}
+}
+}
+journal_entries
+{ id
+tags
+{ id
+}
+created_by
+{ id
+}
+}
+}
+tenant
+{ id
+tags
+{ id
+}
+group
+{ id
+tags
+{ id
+}
+parent
+{ id
+}
+}
+journal_entries
+{ id
+tags
+{ id
+}
+created_by
+{ id
+}
+}
+}
+nat_inside
+{ id
+}
+tunnel_termination
+{ id
+tags
+{ id
+}
+outside_ip
+{ id
+}
+}
+journal_entries
+{ id
+tags
+{ id
+}
+created_by
+{ id
+}
+}
+}
+journal_entries
+{ id
+tags
+{ id
+}
+created_by
+{ id
+}
+}
+}

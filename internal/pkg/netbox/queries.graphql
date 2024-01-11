@@ -1,13 +1,5 @@
-query GetAllTypes {
-  __schema {
-    types {
-      name
-    }
-  }
-}
-
-query GetTypeInfo {
-  __type(name: "IPAddressType") {
+query GetTypeInfo($name: String!) {
+  __type(name: $name) {
     name
     fields {
       name
@@ -17,6 +9,26 @@ query GetTypeInfo {
         ofType {
           name
           kind
+        }
+      }
+    }
+
+    possibleTypes {
+      name
+    }
+  }
+}
+
+query GetVirtualMachine {
+  ip_address(id: 2) {
+    assigned_object {
+    	... on InterfaceType {
+       	id 
+      }
+      
+      ... on VMInterfaceType {
+       	virtual_machine {
+          id
         }
       }
     }

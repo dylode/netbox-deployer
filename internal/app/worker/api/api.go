@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"dylaan.nl/netbox-deployer/internal/pkg/worker"
+	"dylaan.nl/netbox-deployer/internal/pkg/netbox"
 	"github.com/labstack/echo"
 )
 
@@ -12,10 +12,10 @@ type api struct {
 	config Config
 
 	e          *echo.Echo
-	updateChan chan worker.Update
+	updateChan chan netbox.Update
 }
 
-func New(config Config, updateChan chan worker.Update) *api {
+func New(config Config, updateChan chan netbox.Update) *api {
 	return &api{
 		config: config,
 

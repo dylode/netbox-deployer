@@ -1,4 +1,4 @@
-package resolver
+package state
 
 import "github.com/Khan/genqlient/graphql"
 

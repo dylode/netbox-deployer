@@ -1,36 +1,9 @@
-query GetTypeInfo($name: String!) {
-  __type(name: $name) {
-    name
-    fields {
+query GetVirtualMachines {
+  virtual_machine_list {
+    id
+    tags {
+      id
       name
-      type {
-        name
-        kind
-        ofType {
-          name
-          kind
-        }
-      }
-    }
-
-    possibleTypes {
-      name
-    }
-  }
-}
-
-query GetVirtualMachine {
-  ip_address(id: 2) {
-    assigned_object {
-    	... on InterfaceType {
-       	id 
-      }
-      
-      ... on VMInterfaceType {
-       	virtual_machine {
-          id
-        }
-      }
     }
   }
 }

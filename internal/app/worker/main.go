@@ -10,7 +10,7 @@ import (
 	"syscall"
 
 	"dylaan.nl/netbox-deployer/internal/app/worker/api"
-	"dylaan.nl/netbox-deployer/internal/app/worker/resolver"
+	"dylaan.nl/netbox-deployer/internal/app/worker/state"
 	"github.com/Khan/genqlient/graphql"
 )
 
@@ -24,14 +24,14 @@ func Run(config Config) error {
 	httpClient := http.Client{}
 	graphqlClient := graphql.NewClient(config.Worker.GraphqlURL, &httpClient)
 
-	resolver := resolver.New(
-		resolver.NewConfig().WithClient(graphqlClient),
+	state := state.New(
+		state.NewConfig().WithClient(graphqlClient),
 	)
 	api := api.New(
 		api.NewConfig().
 			WithHost(config.Worker.Host).
 			WithPort(config.Worker.Port),
-		resolver.GetUpdateChan(),
+		state.GetUpdateChan(),
 	)
 
 	// run
@@ -45,7 +45,7 @@ func Run(config Config) error {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		errc <- resolver.Run()
+		errc <- state.Run(ctx)
 	}()
 
 	// shutdown
@@ -58,7 +58,7 @@ func Run(config Config) error {
 	}
 	cancel()
 	_ = api.Close()
-	_ = resolver.Close()
+	_ = state.Close()
 	wg.Wait()
 
 	return err

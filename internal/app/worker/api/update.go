@@ -5,7 +5,7 @@ import (
 	"io"
 	"net/http"
 
-	"dylaan.nl/netbox-deployer/internal/pkg/worker"
+	"dylaan.nl/netbox-deployer/internal/pkg/netbox"
 	"github.com/labstack/echo"
 )
 
@@ -17,7 +17,7 @@ func (api api) update(c echo.Context) error {
 		return err
 	}
 
-	var update worker.Update
+	var update netbox.Update
 	if err = json.Unmarshal(body, &update); err != nil {
 		return err
 	}

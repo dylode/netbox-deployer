@@ -25,10 +25,7 @@ er = EventRule(
 er.full_clean()
 er.save()
 
-requiredLabels = ['virtualization', 'ipam']
 for ct in ContentType.objects.all():
-    if not ct.app_label in requiredLabels:
-        continue     
     er.content_types.add(ct)
 "
 

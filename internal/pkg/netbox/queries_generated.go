@@ -4,410 +4,74 @@ package netbox
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
 )
 
-// GetTypeInfoResponse is returned by GetTypeInfo on success.
-type GetTypeInfoResponse struct {
-	Type GetTypeInfoType `json:"__type"`
+// GetVirtualMachinesResponse is returned by GetVirtualMachines on success.
+type GetVirtualMachinesResponse struct {
+	Virtual_machine_list []GetVirtualMachinesVirtual_machine_listVirtualMachineType `json:"virtual_machine_list"`
 }
 
-// GetType returns GetTypeInfoResponse.Type, and is useful for accessing the field via an interface.
-func (v *GetTypeInfoResponse) GetType() GetTypeInfoType { return v.Type }
-
-// GetTypeInfoType includes the requested fields of the GraphQL type __Type.
-type GetTypeInfoType struct {
-	Name          string                             `json:"name"`
-	Fields        []GetTypeInfoTypeFieldsField       `json:"fields"`
-	PossibleTypes []GetTypeInfoTypePossibleTypesType `json:"possibleTypes"`
+// GetVirtual_machine_list returns GetVirtualMachinesResponse.Virtual_machine_list, and is useful for accessing the field via an interface.
+func (v *GetVirtualMachinesResponse) GetVirtual_machine_list() []GetVirtualMachinesVirtual_machine_listVirtualMachineType {
+	return v.Virtual_machine_list
 }
 
-// GetName returns GetTypeInfoType.Name, and is useful for accessing the field via an interface.
-func (v *GetTypeInfoType) GetName() string { return v.Name }
-
-// GetFields returns GetTypeInfoType.Fields, and is useful for accessing the field via an interface.
-func (v *GetTypeInfoType) GetFields() []GetTypeInfoTypeFieldsField { return v.Fields }
-
-// GetPossibleTypes returns GetTypeInfoType.PossibleTypes, and is useful for accessing the field via an interface.
-func (v *GetTypeInfoType) GetPossibleTypes() []GetTypeInfoTypePossibleTypesType {
-	return v.PossibleTypes
+// GetVirtualMachinesVirtual_machine_listVirtualMachineType includes the requested fields of the GraphQL type VirtualMachineType.
+type GetVirtualMachinesVirtual_machine_listVirtualMachineType struct {
+	Id   string                                                                `json:"id"`
+	Tags []GetVirtualMachinesVirtual_machine_listVirtualMachineTypeTagsTagType `json:"tags"`
 }
 
-// GetTypeInfoTypeFieldsField includes the requested fields of the GraphQL type __Field.
-type GetTypeInfoTypeFieldsField struct {
-	Name string                         `json:"name"`
-	Type GetTypeInfoTypeFieldsFieldType `json:"type"`
+// GetId returns GetVirtualMachinesVirtual_machine_listVirtualMachineType.Id, and is useful for accessing the field via an interface.
+func (v *GetVirtualMachinesVirtual_machine_listVirtualMachineType) GetId() string { return v.Id }
+
+// GetTags returns GetVirtualMachinesVirtual_machine_listVirtualMachineType.Tags, and is useful for accessing the field via an interface.
+func (v *GetVirtualMachinesVirtual_machine_listVirtualMachineType) GetTags() []GetVirtualMachinesVirtual_machine_listVirtualMachineTypeTagsTagType {
+	return v.Tags
 }
 
-// GetName returns GetTypeInfoTypeFieldsField.Name, and is useful for accessing the field via an interface.
-func (v *GetTypeInfoTypeFieldsField) GetName() string { return v.Name }
-
-// GetType returns GetTypeInfoTypeFieldsField.Type, and is useful for accessing the field via an interface.
-func (v *GetTypeInfoTypeFieldsField) GetType() GetTypeInfoTypeFieldsFieldType { return v.Type }
-
-// GetTypeInfoTypeFieldsFieldType includes the requested fields of the GraphQL type __Type.
-type GetTypeInfoTypeFieldsFieldType struct {
-	Name   string                               `json:"name"`
-	Kind   TypeKind                             `json:"kind"`
-	OfType GetTypeInfoTypeFieldsFieldTypeOfType `json:"ofType"`
-}
-
-// GetName returns GetTypeInfoTypeFieldsFieldType.Name, and is useful for accessing the field via an interface.
-func (v *GetTypeInfoTypeFieldsFieldType) GetName() string { return v.Name }
-
-// GetKind returns GetTypeInfoTypeFieldsFieldType.Kind, and is useful for accessing the field via an interface.
-func (v *GetTypeInfoTypeFieldsFieldType) GetKind() TypeKind { return v.Kind }
-
-// GetOfType returns GetTypeInfoTypeFieldsFieldType.OfType, and is useful for accessing the field via an interface.
-func (v *GetTypeInfoTypeFieldsFieldType) GetOfType() GetTypeInfoTypeFieldsFieldTypeOfType {
-	return v.OfType
-}
-
-// GetTypeInfoTypeFieldsFieldTypeOfType includes the requested fields of the GraphQL type __Type.
-type GetTypeInfoTypeFieldsFieldTypeOfType struct {
-	Name string   `json:"name"`
-	Kind TypeKind `json:"kind"`
-}
-
-// GetName returns GetTypeInfoTypeFieldsFieldTypeOfType.Name, and is useful for accessing the field via an interface.
-func (v *GetTypeInfoTypeFieldsFieldTypeOfType) GetName() string { return v.Name }
-
-// GetKind returns GetTypeInfoTypeFieldsFieldTypeOfType.Kind, and is useful for accessing the field via an interface.
-func (v *GetTypeInfoTypeFieldsFieldTypeOfType) GetKind() TypeKind { return v.Kind }
-
-// GetTypeInfoTypePossibleTypesType includes the requested fields of the GraphQL type __Type.
-type GetTypeInfoTypePossibleTypesType struct {
+// GetVirtualMachinesVirtual_machine_listVirtualMachineTypeTagsTagType includes the requested fields of the GraphQL type TagType.
+type GetVirtualMachinesVirtual_machine_listVirtualMachineTypeTagsTagType struct {
+	Id   string `json:"id"`
 	Name string `json:"name"`
 }
 
-// GetName returns GetTypeInfoTypePossibleTypesType.Name, and is useful for accessing the field via an interface.
-func (v *GetTypeInfoTypePossibleTypesType) GetName() string { return v.Name }
-
-// GetVirtualMachineIp_addressIPAddressType includes the requested fields of the GraphQL type IPAddressType.
-type GetVirtualMachineIp_addressIPAddressType struct {
-	Assigned_object GetVirtualMachineIp_addressIPAddressTypeAssigned_objectIPAddressAssignmentType `json:"-"`
-}
-
-// GetAssigned_object returns GetVirtualMachineIp_addressIPAddressType.Assigned_object, and is useful for accessing the field via an interface.
-func (v *GetVirtualMachineIp_addressIPAddressType) GetAssigned_object() GetVirtualMachineIp_addressIPAddressTypeAssigned_objectIPAddressAssignmentType {
-	return v.Assigned_object
-}
-
-func (v *GetVirtualMachineIp_addressIPAddressType) UnmarshalJSON(b []byte) error {
-
-	if string(b) == "null" {
-		return nil
-	}
-
-	var firstPass struct {
-		*GetVirtualMachineIp_addressIPAddressType
-		Assigned_object json.RawMessage `json:"assigned_object"`
-		graphql.NoUnmarshalJSON
-	}
-	firstPass.GetVirtualMachineIp_addressIPAddressType = v
-
-	err := json.Unmarshal(b, &firstPass)
-	if err != nil {
-		return err
-	}
-
-	{
-		dst := &v.Assigned_object
-		src := firstPass.Assigned_object
-		if len(src) != 0 && string(src) != "null" {
-			err = __unmarshalGetVirtualMachineIp_addressIPAddressTypeAssigned_objectIPAddressAssignmentType(
-				src, dst)
-			if err != nil {
-				return fmt.Errorf(
-					"unable to unmarshal GetVirtualMachineIp_addressIPAddressType.Assigned_object: %w", err)
-			}
-		}
-	}
-	return nil
-}
-
-type __premarshalGetVirtualMachineIp_addressIPAddressType struct {
-	Assigned_object json.RawMessage `json:"assigned_object"`
-}
-
-func (v *GetVirtualMachineIp_addressIPAddressType) MarshalJSON() ([]byte, error) {
-	premarshaled, err := v.__premarshalJSON()
-	if err != nil {
-		return nil, err
-	}
-	return json.Marshal(premarshaled)
-}
-
-func (v *GetVirtualMachineIp_addressIPAddressType) __premarshalJSON() (*__premarshalGetVirtualMachineIp_addressIPAddressType, error) {
-	var retval __premarshalGetVirtualMachineIp_addressIPAddressType
-
-	{
-
-		dst := &retval.Assigned_object
-		src := v.Assigned_object
-		var err error
-		*dst, err = __marshalGetVirtualMachineIp_addressIPAddressTypeAssigned_objectIPAddressAssignmentType(
-			&src)
-		if err != nil {
-			return nil, fmt.Errorf(
-				"unable to marshal GetVirtualMachineIp_addressIPAddressType.Assigned_object: %w", err)
-		}
-	}
-	return &retval, nil
-}
-
-// GetVirtualMachineIp_addressIPAddressTypeAssigned_objectFHRPGroupType includes the requested fields of the GraphQL type FHRPGroupType.
-type GetVirtualMachineIp_addressIPAddressTypeAssigned_objectFHRPGroupType struct {
-	Typename string `json:"__typename"`
-}
-
-// GetTypename returns GetVirtualMachineIp_addressIPAddressTypeAssigned_objectFHRPGroupType.Typename, and is useful for accessing the field via an interface.
-func (v *GetVirtualMachineIp_addressIPAddressTypeAssigned_objectFHRPGroupType) GetTypename() string {
-	return v.Typename
-}
-
-// GetVirtualMachineIp_addressIPAddressTypeAssigned_objectIPAddressAssignmentType includes the requested fields of the GraphQL interface IPAddressAssignmentType.
-//
-// GetVirtualMachineIp_addressIPAddressTypeAssigned_objectIPAddressAssignmentType is implemented by the following types:
-// GetVirtualMachineIp_addressIPAddressTypeAssigned_objectFHRPGroupType
-// GetVirtualMachineIp_addressIPAddressTypeAssigned_objectInterfaceType
-// GetVirtualMachineIp_addressIPAddressTypeAssigned_objectVMInterfaceType
-type GetVirtualMachineIp_addressIPAddressTypeAssigned_objectIPAddressAssignmentType interface {
-	implementsGraphQLInterfaceGetVirtualMachineIp_addressIPAddressTypeAssigned_objectIPAddressAssignmentType()
-	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
-	GetTypename() string
-}
-
-func (v *GetVirtualMachineIp_addressIPAddressTypeAssigned_objectFHRPGroupType) implementsGraphQLInterfaceGetVirtualMachineIp_addressIPAddressTypeAssigned_objectIPAddressAssignmentType() {
-}
-func (v *GetVirtualMachineIp_addressIPAddressTypeAssigned_objectInterfaceType) implementsGraphQLInterfaceGetVirtualMachineIp_addressIPAddressTypeAssigned_objectIPAddressAssignmentType() {
-}
-func (v *GetVirtualMachineIp_addressIPAddressTypeAssigned_objectVMInterfaceType) implementsGraphQLInterfaceGetVirtualMachineIp_addressIPAddressTypeAssigned_objectIPAddressAssignmentType() {
-}
-
-func __unmarshalGetVirtualMachineIp_addressIPAddressTypeAssigned_objectIPAddressAssignmentType(b []byte, v *GetVirtualMachineIp_addressIPAddressTypeAssigned_objectIPAddressAssignmentType) error {
-	if string(b) == "null" {
-		return nil
-	}
-
-	var tn struct {
-		TypeName string `json:"__typename"`
-	}
-	err := json.Unmarshal(b, &tn)
-	if err != nil {
-		return err
-	}
-
-	switch tn.TypeName {
-	case "FHRPGroupType":
-		*v = new(GetVirtualMachineIp_addressIPAddressTypeAssigned_objectFHRPGroupType)
-		return json.Unmarshal(b, *v)
-	case "InterfaceType":
-		*v = new(GetVirtualMachineIp_addressIPAddressTypeAssigned_objectInterfaceType)
-		return json.Unmarshal(b, *v)
-	case "VMInterfaceType":
-		*v = new(GetVirtualMachineIp_addressIPAddressTypeAssigned_objectVMInterfaceType)
-		return json.Unmarshal(b, *v)
-	case "":
-		return fmt.Errorf(
-			"response was missing IPAddressAssignmentType.__typename")
-	default:
-		return fmt.Errorf(
-			`unexpected concrete type for GetVirtualMachineIp_addressIPAddressTypeAssigned_objectIPAddressAssignmentType: "%v"`, tn.TypeName)
-	}
-}
-
-func __marshalGetVirtualMachineIp_addressIPAddressTypeAssigned_objectIPAddressAssignmentType(v *GetVirtualMachineIp_addressIPAddressTypeAssigned_objectIPAddressAssignmentType) ([]byte, error) {
-
-	var typename string
-	switch v := (*v).(type) {
-	case *GetVirtualMachineIp_addressIPAddressTypeAssigned_objectFHRPGroupType:
-		typename = "FHRPGroupType"
-
-		result := struct {
-			TypeName string `json:"__typename"`
-			*GetVirtualMachineIp_addressIPAddressTypeAssigned_objectFHRPGroupType
-		}{typename, v}
-		return json.Marshal(result)
-	case *GetVirtualMachineIp_addressIPAddressTypeAssigned_objectInterfaceType:
-		typename = "InterfaceType"
-
-		result := struct {
-			TypeName string `json:"__typename"`
-			*GetVirtualMachineIp_addressIPAddressTypeAssigned_objectInterfaceType
-		}{typename, v}
-		return json.Marshal(result)
-	case *GetVirtualMachineIp_addressIPAddressTypeAssigned_objectVMInterfaceType:
-		typename = "VMInterfaceType"
-
-		result := struct {
-			TypeName string `json:"__typename"`
-			*GetVirtualMachineIp_addressIPAddressTypeAssigned_objectVMInterfaceType
-		}{typename, v}
-		return json.Marshal(result)
-	case nil:
-		return []byte("null"), nil
-	default:
-		return nil, fmt.Errorf(
-			`unexpected concrete type for GetVirtualMachineIp_addressIPAddressTypeAssigned_objectIPAddressAssignmentType: "%T"`, v)
-	}
-}
-
-// GetVirtualMachineIp_addressIPAddressTypeAssigned_objectInterfaceType includes the requested fields of the GraphQL type InterfaceType.
-type GetVirtualMachineIp_addressIPAddressTypeAssigned_objectInterfaceType struct {
-	Typename string `json:"__typename"`
-	Id       string `json:"id"`
-}
-
-// GetTypename returns GetVirtualMachineIp_addressIPAddressTypeAssigned_objectInterfaceType.Typename, and is useful for accessing the field via an interface.
-func (v *GetVirtualMachineIp_addressIPAddressTypeAssigned_objectInterfaceType) GetTypename() string {
-	return v.Typename
-}
-
-// GetId returns GetVirtualMachineIp_addressIPAddressTypeAssigned_objectInterfaceType.Id, and is useful for accessing the field via an interface.
-func (v *GetVirtualMachineIp_addressIPAddressTypeAssigned_objectInterfaceType) GetId() string {
+// GetId returns GetVirtualMachinesVirtual_machine_listVirtualMachineTypeTagsTagType.Id, and is useful for accessing the field via an interface.
+func (v *GetVirtualMachinesVirtual_machine_listVirtualMachineTypeTagsTagType) GetId() string {
 	return v.Id
 }
 
-// GetVirtualMachineIp_addressIPAddressTypeAssigned_objectVMInterfaceType includes the requested fields of the GraphQL type VMInterfaceType.
-type GetVirtualMachineIp_addressIPAddressTypeAssigned_objectVMInterfaceType struct {
-	Typename        string                                                                                                  `json:"__typename"`
-	Virtual_machine GetVirtualMachineIp_addressIPAddressTypeAssigned_objectVMInterfaceTypeVirtual_machineVirtualMachineType `json:"virtual_machine"`
+// GetName returns GetVirtualMachinesVirtual_machine_listVirtualMachineTypeTagsTagType.Name, and is useful for accessing the field via an interface.
+func (v *GetVirtualMachinesVirtual_machine_listVirtualMachineTypeTagsTagType) GetName() string {
+	return v.Name
 }
 
-// GetTypename returns GetVirtualMachineIp_addressIPAddressTypeAssigned_objectVMInterfaceType.Typename, and is useful for accessing the field via an interface.
-func (v *GetVirtualMachineIp_addressIPAddressTypeAssigned_objectVMInterfaceType) GetTypename() string {
-	return v.Typename
-}
-
-// GetVirtual_machine returns GetVirtualMachineIp_addressIPAddressTypeAssigned_objectVMInterfaceType.Virtual_machine, and is useful for accessing the field via an interface.
-func (v *GetVirtualMachineIp_addressIPAddressTypeAssigned_objectVMInterfaceType) GetVirtual_machine() GetVirtualMachineIp_addressIPAddressTypeAssigned_objectVMInterfaceTypeVirtual_machineVirtualMachineType {
-	return v.Virtual_machine
-}
-
-// GetVirtualMachineIp_addressIPAddressTypeAssigned_objectVMInterfaceTypeVirtual_machineVirtualMachineType includes the requested fields of the GraphQL type VirtualMachineType.
-type GetVirtualMachineIp_addressIPAddressTypeAssigned_objectVMInterfaceTypeVirtual_machineVirtualMachineType struct {
-	Id string `json:"id"`
-}
-
-// GetId returns GetVirtualMachineIp_addressIPAddressTypeAssigned_objectVMInterfaceTypeVirtual_machineVirtualMachineType.Id, and is useful for accessing the field via an interface.
-func (v *GetVirtualMachineIp_addressIPAddressTypeAssigned_objectVMInterfaceTypeVirtual_machineVirtualMachineType) GetId() string {
-	return v.Id
-}
-
-// GetVirtualMachineResponse is returned by GetVirtualMachine on success.
-type GetVirtualMachineResponse struct {
-	Ip_address GetVirtualMachineIp_addressIPAddressType `json:"ip_address"`
-}
-
-// GetIp_address returns GetVirtualMachineResponse.Ip_address, and is useful for accessing the field via an interface.
-func (v *GetVirtualMachineResponse) GetIp_address() GetVirtualMachineIp_addressIPAddressType {
-	return v.Ip_address
-}
-
-type TypeKind string
-
-const (
-	TypeKindScalar      TypeKind = "SCALAR"
-	TypeKindObject      TypeKind = "OBJECT"
-	TypeKindInterface   TypeKind = "INTERFACE"
-	TypeKindUnion       TypeKind = "UNION"
-	TypeKindEnum        TypeKind = "ENUM"
-	TypeKindInputObject TypeKind = "INPUT_OBJECT"
-	TypeKindList        TypeKind = "LIST"
-	TypeKindNonNull     TypeKind = "NON_NULL"
-)
-
-// __GetTypeInfoInput is used internally by genqlient
-type __GetTypeInfoInput struct {
-	Name string `json:"name"`
-}
-
-// GetName returns __GetTypeInfoInput.Name, and is useful for accessing the field via an interface.
-func (v *__GetTypeInfoInput) GetName() string { return v.Name }
-
-// The query or mutation executed by GetTypeInfo.
-const GetTypeInfo_Operation = `
-query GetTypeInfo ($name: String!) {
-	__type(name: $name) {
-		name
-		fields {
-			name
-			type {
-				name
-				kind
-				ofType {
-					name
-					kind
-				}
-			}
-		}
-		possibleTypes {
+// The query or mutation executed by GetVirtualMachines.
+const GetVirtualMachines_Operation = `
+query GetVirtualMachines {
+	virtual_machine_list {
+		id
+		tags {
+			id
 			name
 		}
 	}
 }
 `
 
-func GetTypeInfo(
+func GetVirtualMachines(
 	ctx context.Context,
 	client graphql.Client,
-	name string,
-) (*GetTypeInfoResponse, error) {
+) (*GetVirtualMachinesResponse, error) {
 	req := &graphql.Request{
-		OpName: "GetTypeInfo",
-		Query:  GetTypeInfo_Operation,
-		Variables: &__GetTypeInfoInput{
-			Name: name,
-		},
+		OpName: "GetVirtualMachines",
+		Query:  GetVirtualMachines_Operation,
 	}
 	var err error
 
-	var data GetTypeInfoResponse
-	resp := &graphql.Response{Data: &data}
-
-	err = client.MakeRequest(
-		ctx,
-		req,
-		resp,
-	)
-
-	return &data, err
-}
-
-// The query or mutation executed by GetVirtualMachine.
-const GetVirtualMachine_Operation = `
-query GetVirtualMachine {
-	ip_address(id: 2) {
-		assigned_object {
-			__typename
-			... on InterfaceType {
-				id
-			}
-			... on VMInterfaceType {
-				virtual_machine {
-					id
-				}
-			}
-		}
-	}
-}
-`
-
-func GetVirtualMachine(
-	ctx context.Context,
-	client graphql.Client,
-) (*GetVirtualMachineResponse, error) {
-	req := &graphql.Request{
-		OpName: "GetVirtualMachine",
-		Query:  GetVirtualMachine_Operation,
-	}
-	var err error
-
-	var data GetVirtualMachineResponse
+	var data GetVirtualMachinesResponse
 	resp := &graphql.Response{Data: &data}
 
 	err = client.MakeRequest(

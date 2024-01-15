@@ -59,6 +59,8 @@ func (r *state) Run(ctx context.Context) error {
 		return err
 	}
 
+	fmt.Println(allVirtualMachinesRequest)
+
 	for _, vm := range allVirtualMachinesRequest.Virtual_machine_list {
 		relations := []relation{}
 

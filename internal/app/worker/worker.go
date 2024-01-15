@@ -21,8 +21,13 @@ func Run(config Config) error {
 	defer cancel()
 
 	// setup
-	httpClient := http.Client{}
-	graphqlClient := graphql.NewClient(config.Worker.GraphqlURL, &httpClient)
+	httpClient := http.Client{
+		Transport: &authedTransport{
+			token:   config.Netbox.Token,
+			wrapped: http.DefaultTransport,
+		},
+	}
+	graphqlClient := graphql.NewClient(config.Netbox.URL+"/graphql/", &httpClient)
 
 	state := state.New(
 		state.NewConfig().WithClient(graphqlClient),

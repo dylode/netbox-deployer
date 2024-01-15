@@ -1,4 +1,8 @@
 worker:
   host: 10.10.10.1
   port: 8080
-  graphql_url: http://10.10.10.2:8080/graphql/
+
+netbox:
+  url: http://10.10.10.2:8080
+  token: 311506abdcb7c266f7fb3d23c76c87747d99c54c
+  

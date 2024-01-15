@@ -8,9 +8,12 @@ type Config struct {
 	Worker struct {
 		Host string `mapstructure:"host"`
 		Port int    `mapstructure:"port"`
-
-		GraphqlURL string `mapstructure:"graphql_url"`
 	} `mapstructure:"worker"`
+
+	Netbox struct {
+		URL   string `mapstructure:"url"`
+		Token string `mapstructure:"token"`
+	} `mapstructure:"netbox"`
 }
 
 func NewConfigFromPath(configFilePath string) (Config, error) {

@@ -5,5 +5,17 @@ query GetVirtualMachines {
       id
       name
     }
+    interfaces {
+      id
+      name
+      ip_addresses {
+        id
+        address
+      }
+      tagged_vlans {
+        id
+        vid
+      }
+    }
   }
 }

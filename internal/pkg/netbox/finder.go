@@ -1,8 +1,6 @@
-package state
+package netbox
 
-import "dylaan.nl/netbox-deployer/internal/pkg/netbox"
-
-func walk(current relation, targetModelName netbox.ModelName, targetModelID netbox.ModelID) bool {
+func walk(current relation, targetModelName ModelName, targetModelID ModelID) bool {
 	if current.getModelName() == targetModelName && current.getModelID() == targetModelID {
 		return true
 	}
@@ -16,6 +14,6 @@ func walk(current relation, targetModelName netbox.ModelName, targetModelID netb
 	return false
 }
 
-func (vm virtualMachine) hasRelation(targetModelName netbox.ModelName, targetModelID netbox.ModelID) bool {
+func (vm VirtualMachine) HasRelation(targetModelName ModelName, targetModelID ModelID) bool {
 	return walk(&vm, targetModelName, targetModelID)
 }

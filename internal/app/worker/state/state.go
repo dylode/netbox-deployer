@@ -11,15 +11,16 @@ type state struct {
 	config Config
 
 	webhookEventBus <-chan netbox.WebhookEvent
-	virtualMachines []virtualMachine
+
+	netboxVirtualMachines map[netbox.ModelID]netbox.VirtualMachine
 }
 
 func New(config Config, webhookEventBus <-chan netbox.WebhookEvent) *state {
 	return &state{
 		config: config,
 
-		webhookEventBus: webhookEventBus,
-		virtualMachines: []virtualMachine{},
+		webhookEventBus:       webhookEventBus,
+		netboxVirtualMachines: make(map[netbox.ModelID]netbox.VirtualMachine),
 	}
 }
 
@@ -30,7 +31,8 @@ func (r *state) initState(ctx context.Context) error {
 	}
 
 	for _, vm := range allVirtualMachinesRequest.Virtual_machine_list {
-		r.virtualMachines = append(r.virtualMachines, newVirtualMachine(vm))
+		netboxVM := netbox.NewVirtualMachine(vm)
+		r.netboxVirtualMachines[netboxVM.ID] = netboxVM
 	}
 
 	return nil
@@ -50,9 +52,9 @@ func (r *state) Run(ctx context.Context) error {
 }
 
 func (r state) process(event netbox.WebhookEvent) {
-	for _, vm := range r.virtualMachines {
-		if vm.hasRelation(event.ModelName, event.ModelID) {
-			fmt.Println(vm.id)
+	for id, vm := range r.netboxVirtualMachines {
+		if vm.HasRelation(event.ModelName, event.ModelID) {
+			fmt.Println(id)
 		}
 	}
 }

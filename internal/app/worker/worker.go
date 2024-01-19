@@ -11,10 +11,11 @@ import (
 
 	"dylaan.nl/netbox-deployer/internal/app/worker/api"
 	"dylaan.nl/netbox-deployer/internal/app/worker/state"
+	"dylaan.nl/netbox-deployer/internal/pkg/netbox"
 	"github.com/Khan/genqlient/graphql"
 )
 
-const errorChanSize = 10
+const defaultChanSize = 10
 
 func Run(config Config) error {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT)
@@ -29,18 +30,21 @@ func Run(config Config) error {
 	}
 	graphqlClient := graphql.NewClient(config.Netbox.URL+"/graphql/", &httpClient)
 
+	webhookEventBus := make(chan netbox.WebhookEvent, defaultChanSize)
+
 	state := state.New(
 		state.NewConfig().WithClient(graphqlClient),
+		webhookEventBus,
 	)
 	api := api.New(
 		api.NewConfig().
 			WithHost(config.Worker.Host).
 			WithPort(config.Worker.Port),
-		state.GetUpdateChan(),
+		webhookEventBus,
 	)
 
 	// run
-	errc := make(chan error, errorChanSize)
+	errc := make(chan error, defaultChanSize)
 	wg := sync.WaitGroup{}
 	wg.Add(1)
 	go func() {
@@ -61,7 +65,9 @@ func Run(config Config) error {
 	case err = <-errc:
 		fmt.Println("closing due to error")
 	}
+
 	cancel()
+	close(webhookEventBus)
 	_ = api.Close()
 	_ = state.Close()
 	wg.Wait()

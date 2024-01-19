@@ -17,12 +17,12 @@ func (api api) update(c echo.Context) error {
 		return err
 	}
 
-	var update netbox.Update
-	if err = json.Unmarshal(body, &update); err != nil {
+	var event netbox.WebhookEvent
+	if err = json.Unmarshal(body, &event); err != nil {
 		return err
 	}
 
-	api.updateChan <- update
+	api.webhookEventBus <- event
 
 	return c.NoContent(http.StatusOK)
 }

@@ -11,16 +11,16 @@ import (
 type api struct {
 	config Config
 
-	e          *echo.Echo
-	updateChan chan netbox.Update
+	e               *echo.Echo
+	webhookEventBus chan<- netbox.WebhookEvent
 }
 
-func New(config Config, updateChan chan netbox.Update) *api {
+func New(config Config, webhookEventBus chan<- netbox.WebhookEvent) *api {
 	return &api{
 		config: config,
 
-		e:          echo.New(),
-		updateChan: updateChan,
+		e:               echo.New(),
+		webhookEventBus: webhookEventBus,
 	}
 }
 

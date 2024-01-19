@@ -7,26 +7,20 @@ import (
 	"dylaan.nl/netbox-deployer/internal/pkg/netbox"
 )
 
-const workerUpdateChanBuffer = 1_000
-
 type state struct {
 	config Config
 
-	updateChan      chan netbox.Update
+	webhookEventBus <-chan netbox.WebhookEvent
 	virtualMachines []virtualMachine
 }
 
-func New(config Config) *state {
+func New(config Config, webhookEventBus <-chan netbox.WebhookEvent) *state {
 	return &state{
 		config: config,
 
-		updateChan:      make(chan netbox.Update, workerUpdateChanBuffer),
+		webhookEventBus: webhookEventBus,
 		virtualMachines: []virtualMachine{},
 	}
-}
-
-func (r state) GetUpdateChan() chan netbox.Update {
-	return r.updateChan
 }
 
 func (r *state) initState(ctx context.Context) error {
@@ -47,22 +41,22 @@ func (r *state) Run(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println(r.virtualMachines)
 
-	for update := range r.updateChan {
-		for _, vm := range r.virtualMachines {
-			for _, relation := range vm.relations {
-				if relation.getModel() == update.Model && relation.getModelID() == update.ID {
-					fmt.Println(vm)
-				}
-			}
-		}
+	for event := range r.webhookEventBus {
+		r.process(event)
 	}
 
 	return nil
 }
 
+func (r state) process(event netbox.WebhookEvent) {
+	for _, vm := range r.virtualMachines {
+		if vm.hasRelation(event.ModelName, event.ModelID) {
+			fmt.Println(vm.id)
+		}
+	}
+}
+
 func (r state) Close() error {
-	close(r.updateChan)
 	return nil
 }

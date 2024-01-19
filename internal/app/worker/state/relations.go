@@ -7,9 +7,10 @@ import (
 )
 
 type relation interface {
-	getModel() netbox.Model
+	getModelName() netbox.ModelName
 	getModelID() netbox.ModelID
 	addRelation(relation)
+	getRelations() []relation
 }
 
 type baseRelation struct {
@@ -23,6 +24,10 @@ func (b baseRelation) getModelID() netbox.ModelID {
 
 func (b *baseRelation) addRelation(r relation) {
 	b.relations = append(b.relations, r)
+}
+
+func (b baseRelation) getRelations() []relation {
+	return b.relations
 }
 
 func newBaseRelation(id string) baseRelation {
@@ -41,8 +46,8 @@ type virtualMachine struct {
 	baseRelation
 }
 
-func (virtualMachine) getModel() netbox.Model {
-	return netbox.Model("virtualmachine")
+func (virtualMachine) getModelName() netbox.ModelName {
+	return netbox.ModelName("virtualmachine")
 }
 
 type tagRelation struct {
@@ -50,8 +55,8 @@ type tagRelation struct {
 	name string
 }
 
-func (tagRelation) getModel() netbox.Model {
-	return netbox.Model("tag")
+func (tagRelation) getModelName() netbox.ModelName {
+	return netbox.ModelName("tag")
 }
 
 type virtualMachineInterfaceRelation struct {
@@ -59,8 +64,8 @@ type virtualMachineInterfaceRelation struct {
 	name string
 }
 
-func (virtualMachineInterfaceRelation) getModel() netbox.Model {
-	return netbox.Model("interface")
+func (virtualMachineInterfaceRelation) getModelName() netbox.ModelName {
+	return netbox.ModelName("vminterface")
 }
 
 type ipAddressRelation struct {
@@ -68,8 +73,8 @@ type ipAddressRelation struct {
 	address string
 }
 
-func (ipAddressRelation) getModel() netbox.Model {
-	return netbox.Model("ipaddress")
+func (ipAddressRelation) getModelName() netbox.ModelName {
+	return netbox.ModelName("ipaddress")
 }
 
 type taggedVlanRelation struct {
@@ -77,6 +82,6 @@ type taggedVlanRelation struct {
 	vid int
 }
 
-func (taggedVlanRelation) getModel() netbox.Model {
-	return netbox.Model("taggedvlan")
+func (taggedVlanRelation) getModelName() netbox.ModelName {
+	return netbox.ModelName("vlan")
 }

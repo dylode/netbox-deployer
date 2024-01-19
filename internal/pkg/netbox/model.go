@@ -1,19 +1,19 @@
 package netbox
 
-type UpdateEvent string
+type EventType string
 
-type Model string
+type ModelName string
 
 type ModelID int
 
 const (
-	Created UpdateEvent = "created"
-	Updated UpdateEvent = "updated"
-	Deleted UpdateEvent = "deleted"
+	Created EventType = "created"
+	Updated EventType = "updated"
+	Deleted EventType = "deleted"
 )
 
-type Update struct {
-	Event UpdateEvent `json:"event"`
-	Model Model       `json:"model"`
-	ID    ModelID     `json:"id"`
+type WebhookEvent struct {
+	EventType EventType `json:"event"`
+	ModelName ModelName `json:"model"`
+	ModelID   ModelID   `json:"id"`
 }

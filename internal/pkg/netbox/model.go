@@ -7,9 +7,9 @@ type ModelName string
 type ModelID int
 
 const (
-	Created EventType = "created"
-	Updated EventType = "updated"
-	Deleted EventType = "deleted"
+	EventCreated EventType = "created"
+	EventUpdated EventType = "updated"
+	EventDeleted EventType = "deleted"
 )
 
 type WebhookEvent struct {

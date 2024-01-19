@@ -83,3 +83,17 @@ type TaggedVlanRelation struct {
 func (TaggedVlanRelation) getModelName() ModelName {
 	return ModelName("vlan")
 }
+
+func AllModelNames() []ModelName {
+	names := []ModelName{}
+	for _, rel := range []relation{
+		&TagRelation{},
+		&VirtualMachineInterfaceRelation{},
+		&IPAddressRelation{},
+		&TaggedVlanRelation{},
+	} {
+		names = append(names, rel.getModelName())
+	}
+
+	return names
+}

@@ -17,5 +17,7 @@ query GetVirtualMachines {
         vid
       }
     }
+
+    custom_fields
   }
 }

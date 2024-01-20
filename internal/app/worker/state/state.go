@@ -4,10 +4,12 @@ import (
 	"context"
 	"fmt"
 	"slices"
+	"strings"
 	"sync"
 	"time"
 
 	"dylaan.nl/netbox-deployer/internal/pkg/netbox"
+	"github.com/luthermonson/go-proxmox"
 	g "github.com/zyedidia/generic"
 	"github.com/zyedidia/generic/hashset"
 )
@@ -25,15 +27,17 @@ type state struct {
 	webhookEventBus       <-chan netbox.WebhookEvent
 	updatables            *hashset.Set[netbox.ModelID]
 	netboxVirtualMachines map[netbox.ModelID]netbox.VirtualMachine
+	pveClient             *proxmox.Client
 }
 
-func New(config Config, webhookEventBus <-chan netbox.WebhookEvent) *state {
+func New(config Config, webhookEventBus <-chan netbox.WebhookEvent, pveClient *proxmox.Client) *state {
 	return &state{
 		config: config,
 
 		webhookEventBus:       webhookEventBus,
 		updatables:            hashset.New[netbox.ModelID](defaultSetSize, g.Equals, ModelIDHash),
 		netboxVirtualMachines: make(map[netbox.ModelID]netbox.VirtualMachine),
+		pveClient:             pveClient,
 	}
 }
 
@@ -52,6 +56,36 @@ func (r *state) sync(ctx context.Context) error {
 	// TODO: loop through updatables, check validaty, update proxmox accordingly
 	r.updatables.Each(func(id netbox.ModelID) {
 		fmt.Printf("updating virtual machine %d\n\r", id)
+
+		vm := r.netboxVirtualMachines[id]
+		vmFlat := vm.Flat()
+
+		if vm.PveID != nil {
+
+			node, err := r.pveClient.Node(ctx, "pve01")
+			if err != nil {
+				panic(err)
+			}
+
+			pvevm, err := node.VirtualMachine(ctx, *vm.PveID)
+			if err != nil {
+				panic(err)
+			}
+
+			existingTags := strings.Split(pvevm.Tags, ";")
+			for _, t := range existingTags {
+				if !slices.Contains(vmFlat.Tags, t) {
+					pvevm.RemoveTag(ctx, t)
+				}
+			}
+
+			for _, t := range vmFlat.Tags {
+				if !slices.Contains(pvevm.VirtualMachineConfig.TagsSlice, t) {
+					pvevm.AddTag(ctx, t)
+				}
+			}
+
+		}
 	})
 
 	r.updatables.Clear()

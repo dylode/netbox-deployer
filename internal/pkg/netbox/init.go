@@ -7,8 +7,15 @@ type ipAddress = GetVirtualMachinesVirtual_machine_listVirtualMachineTypeInterfa
 type taggedVlan = GetVirtualMachinesVirtual_machine_listVirtualMachineTypeInterfacesVMInterfaceTypeTagged_vlansVLANType
 
 func NewVirtualMachine(vmData vmData) VirtualMachine {
+	pveID, ok := vmData.Custom_fields["nb_pve_id"].(float64)
+	var pveID2 *int
+	if ok {
+		pveIDInt := int(pveID)
+		pveID2 = &pveIDInt
+	}
 	vm := &VirtualMachine{
 		baseRelation: newBaseRelation(vmData.Id),
+		PveID:        pveID2,
 	}
 
 	initTags(vm, vmData.Tags)
@@ -17,7 +24,7 @@ func NewVirtualMachine(vmData vmData) VirtualMachine {
 	return *vm
 }
 
-func initTags[T relation](parent T, tags []tag) {
+func initTags(parent relation, tags []tag) {
 	for _, tag := range tags {
 		parent.addRelation(&TagRelation{
 			baseRelation: newBaseRelation(tag.Id),
@@ -26,7 +33,7 @@ func initTags[T relation](parent T, tags []tag) {
 	}
 }
 
-func initVirtualMachineInterfaces[T relation](parent T, vmInterfaces []vmInterface) {
+func initVirtualMachineInterfaces(parent relation, vmInterfaces []vmInterface) {
 	for _, vmInterface := range vmInterfaces {
 		interf := &VirtualMachineInterfaceRelation{
 			baseRelation: newBaseRelation(vmInterface.Id),
@@ -40,7 +47,7 @@ func initVirtualMachineInterfaces[T relation](parent T, vmInterfaces []vmInterfa
 	}
 }
 
-func initIPAddresses[T relation](parent T, ipAddresses []ipAddress) {
+func initIPAddresses(parent relation, ipAddresses []ipAddress) {
 	for _, ipAddress := range ipAddresses {
 		parent.addRelation(&IPAddressRelation{
 			baseRelation: newBaseRelation(ipAddress.Id),
@@ -49,7 +56,7 @@ func initIPAddresses[T relation](parent T, ipAddresses []ipAddress) {
 	}
 }
 
-func initTaggedVlans[T relation](parent T, vlans []taggedVlan) {
+func initTaggedVlans(parent relation, vlans []taggedVlan) {
 	for _, vlan := range vlans {
 		parent.addRelation(&TaggedVlanRelation{
 			baseRelation: newBaseRelation(vlan.Id),

@@ -14,6 +14,12 @@ type Config struct {
 		URL   string `mapstructure:"url"`
 		Token string `mapstructure:"token"`
 	} `mapstructure:"netbox"`
+
+	Proxmox struct {
+		URL     string `mapstructure:"url"`
+		TokenID string `mapstructure:"token_id"`
+		Secret  string `mapstructure:"secret"`
+	}
 }
 
 func NewConfigFromPath(configFilePath string) (Config, error) {

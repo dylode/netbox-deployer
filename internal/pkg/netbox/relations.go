@@ -42,6 +42,30 @@ func newBaseRelation(id string) baseRelation {
 
 type VirtualMachine struct {
 	baseRelation
+	PveID *int
+}
+
+type FlatVM struct {
+	Tags []string
+}
+
+func (vm VirtualMachine) Flat() FlatVM {
+	tags := []string{}
+
+	for _, rel := range vm.relations {
+		if rel.getModelName() == "tag" {
+			tagRel, ok := rel.(*TagRelation)
+			if !ok {
+				panic("ok")
+			}
+
+			tags = append(tags, tagRel.Name)
+		}
+	}
+
+	return FlatVM{
+		Tags: tags,
+	}
 }
 
 func (VirtualMachine) getModelName() ModelName {

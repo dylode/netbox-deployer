@@ -20,9 +20,10 @@ func (v *GetVirtualMachinesResponse) GetVirtual_machine_list() []GetVirtualMachi
 
 // GetVirtualMachinesVirtual_machine_listVirtualMachineType includes the requested fields of the GraphQL type VirtualMachineType.
 type GetVirtualMachinesVirtual_machine_listVirtualMachineType struct {
-	Id         string                                                                              `json:"id"`
-	Tags       []GetVirtualMachinesVirtual_machine_listVirtualMachineTypeTagsTagType               `json:"tags"`
-	Interfaces []GetVirtualMachinesVirtual_machine_listVirtualMachineTypeInterfacesVMInterfaceType `json:"interfaces"`
+	Id            string                                                                              `json:"id"`
+	Tags          []GetVirtualMachinesVirtual_machine_listVirtualMachineTypeTagsTagType               `json:"tags"`
+	Interfaces    []GetVirtualMachinesVirtual_machine_listVirtualMachineTypeInterfacesVMInterfaceType `json:"interfaces"`
+	Custom_fields map[string]any                                                                      `json:"custom_fields"`
 }
 
 // GetId returns GetVirtualMachinesVirtual_machine_listVirtualMachineType.Id, and is useful for accessing the field via an interface.
@@ -36,6 +37,11 @@ func (v *GetVirtualMachinesVirtual_machine_listVirtualMachineType) GetTags() []G
 // GetInterfaces returns GetVirtualMachinesVirtual_machine_listVirtualMachineType.Interfaces, and is useful for accessing the field via an interface.
 func (v *GetVirtualMachinesVirtual_machine_listVirtualMachineType) GetInterfaces() []GetVirtualMachinesVirtual_machine_listVirtualMachineTypeInterfacesVMInterfaceType {
 	return v.Interfaces
+}
+
+// GetCustom_fields returns GetVirtualMachinesVirtual_machine_listVirtualMachineType.Custom_fields, and is useful for accessing the field via an interface.
+func (v *GetVirtualMachinesVirtual_machine_listVirtualMachineType) GetCustom_fields() map[string]any {
+	return v.Custom_fields
 }
 
 // GetVirtualMachinesVirtual_machine_listVirtualMachineTypeInterfacesVMInterfaceType includes the requested fields of the GraphQL type VMInterfaceType.
@@ -137,6 +143,7 @@ query GetVirtualMachines {
 				vid
 			}
 		}
+		custom_fields
 	}
 }
 `

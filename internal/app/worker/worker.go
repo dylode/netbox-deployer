@@ -2,6 +2,7 @@ package worker
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
 	"net/http"
 	"os"
@@ -13,6 +14,7 @@ import (
 	"dylaan.nl/netbox-deployer/internal/app/worker/state"
 	"dylaan.nl/netbox-deployer/internal/pkg/netbox"
 	"github.com/Khan/genqlient/graphql"
+	"github.com/luthermonson/go-proxmox"
 )
 
 const defaultChanSize = 10
@@ -32,9 +34,23 @@ func Run(config Config) error {
 
 	webhookEventBus := make(chan netbox.WebhookEvent, defaultChanSize)
 
+	insecureHTTPClient := http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{
+				InsecureSkipVerify: true,
+			},
+		},
+	}
+
+	client := proxmox.NewClient(config.Proxmox.URL,
+		proxmox.WithHTTPClient(&insecureHTTPClient),
+		proxmox.WithAPIToken(config.Proxmox.TokenID, config.Proxmox.Secret),
+	)
+
 	state := state.New(
 		state.NewConfig().WithClient(graphqlClient),
 		webhookEventBus,
+		client,
 	)
 	api := api.New(
 		api.NewConfig().

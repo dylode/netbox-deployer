@@ -6,3 +6,7 @@ operations:
 generated: internal/pkg/netbox/queries_generated.go
 
 package: netbox
+
+bindings:
+  GenericScalar:
+    type: map[string]any

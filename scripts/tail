@@ -1,0 +1,6 @@
+#!/bin/bash
+
+while :
+do
+    scripts/compose logs -f $1
+done

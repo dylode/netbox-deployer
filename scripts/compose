@@ -1,6 +1,7 @@
 #!/bin/bash
 
 docker compose \
+  #-f third_party/netbox-docker/docker-compose.yml \
   -f docker-compose.yml \
   -p netbox-deployer \
   $@

@@ -3,6 +3,7 @@ package manager
 import (
 	"context"
 	"fmt"
+	"slices"
 	"sync"
 	"time"
 
@@ -16,6 +17,8 @@ const defaultSetSize = 1_000
 
 type netboxClient interface {
 	GetManagingVirtualMachines(context.Context) (map[netbox.ModelID]netbox.VirtualMachine, error)
+	AllModelNames() []netbox.ModelName
+	HasComponent(netbox.VirtualMachine, netbox.ModelName, netbox.ModelID) bool
 }
 
 func ModelIDHash(modelID netbox.ModelID) uint64 {
@@ -132,41 +135,41 @@ LOOP:
 }
 
 func (r *manager) process(event netbox.WebhookEvent) {
-	//defer r.Unlock()
+	defer r.Unlock()
 
 	fmt.Printf("%s %s %d\n\r", event.EventType, event.ModelName, event.ModelID)
 
-	//if event.EventType == netbox.EventCreated && slices.Contains(netbox.AllModelNames(), event.ModelName) {
-	//	r.Lock()
-	//	for id := range r.netboxVirtualMachines {
-	//		r.updatables.Put(id)
-	//	}
-	//	return
-	//}
+	if event.EventType == netbox.EventCreated && slices.Contains(netbox.AllModelNames(), event.ModelName) {
+		r.Lock()
+		for id := range r.netboxVirtualMachines {
+			r.updatables.Put(id)
+		}
+		return
+	}
 
-	//wg := sync.WaitGroup{}
-	//wg.Add(len(r.netboxVirtualMachines))
-	//updatables := make(chan netbox.ModelID, len(r.netboxVirtualMachines))
+	wg := sync.WaitGroup{}
+	wg.Add(len(r.netboxVirtualMachines))
+	updatables := make(chan netbox.ModelID, len(r.netboxVirtualMachines))
 
-	//for id, vm := range r.netboxVirtualMachines {
-	//	// TODO: there is something better for this
-	//	myVM := vm
-	//	myID := id
-	//	go func() {
-	//		defer wg.Done()
-	//		if myVM.HasRelation(event.ModelName, event.ModelID) {
-	//			updatables <- myID
-	//		}
-	//	}()
-	//}
+	for id, vm := range r.netboxVirtualMachines {
+		// TODO: there is something better for this
+		myVM := vm
+		myID := id
+		go func() {
+			defer wg.Done()
+			if r.netboxClient.HasComponent(myVM, event.ModelName, event.ModelID) {
+				updatables <- myID
+			}
+		}()
+	}
 
-	//wg.Wait()
-	//close(updatables)
+	wg.Wait()
+	close(updatables)
 
-	//r.Lock()
-	//for id := range updatables {
-	//	r.updatables.Put(id)
-	//}
+	r.Lock()
+	for id := range updatables {
+		r.updatables.Put(id)
+	}
 }
 
 func (r *manager) Close() error {

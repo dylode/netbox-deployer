@@ -11,9 +11,8 @@ import (
 	"syscall"
 
 	"dylaan.nl/netbox-deployer/internal/app/worker/api"
-	"dylaan.nl/netbox-deployer/internal/app/worker/state"
+	"dylaan.nl/netbox-deployer/internal/app/worker/manager"
 	"dylaan.nl/netbox-deployer/internal/pkg/netbox"
-	"github.com/Khan/genqlient/graphql"
 	"github.com/luthermonson/go-proxmox"
 )
 
@@ -24,14 +23,6 @@ func Run(config Config) error {
 	defer cancel()
 
 	// setup
-	httpClient := http.Client{
-		Transport: &authedTransport{
-			token:   config.Netbox.Token,
-			wrapped: http.DefaultTransport,
-		},
-	}
-	graphqlClient := graphql.NewClient(config.Netbox.URL+"/graphql/", &httpClient)
-
 	webhookEventBus := make(chan netbox.WebhookEvent, defaultChanSize)
 
 	insecureHTTPClient := http.Client{
@@ -42,15 +33,17 @@ func Run(config Config) error {
 		},
 	}
 
-	client := proxmox.NewClient(config.Proxmox.URL,
+	pveClient := proxmox.NewClient(config.Proxmox.URL,
 		proxmox.WithHTTPClient(&insecureHTTPClient),
 		proxmox.WithAPIToken(config.Proxmox.TokenID, config.Proxmox.Secret),
 	)
 
-	state := state.New(
-		state.NewConfig().WithClient(graphqlClient),
+	netboxClient := netbox.New(config.Netbox.URL, config.Netbox.Token)
+
+	state := manager.New(
 		webhookEventBus,
-		client,
+		pveClient,
+		netboxClient,
 	)
 	api := api.New(
 		api.NewConfig().

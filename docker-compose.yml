@@ -1,25 +1,11 @@
 version: '3.8'
 
 services:
-  #netbox:
-  #  networks:
-  #    default:
-  #    development:
-  #      ipv4_address: 10.10.10.2
-  app:
-    build: .
-    command: go run . worker
-    develop:
-      watch:
-        - action: sync+restart
-          path: ./
-          target: /app
-          ignore:
-            - .git
+  netbox:
     networks:
       default:
       development:
-        ipv4_address: 10.10.10.3
+        ipv4_address: 10.10.10.2
 
 networks:
   development:

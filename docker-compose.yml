@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   netbox:
+    image: docker.io/netboxcommunity/netbox:v3.7.1
     networks:
       default:
       development:

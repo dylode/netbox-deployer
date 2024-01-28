@@ -2,6 +2,7 @@ package netbox
 
 import (
 	"context"
+	"fmt"
 
 	gonetbox "github.com/netbox-community/go-netbox/v3"
 )
@@ -17,7 +18,7 @@ func New(url string, token string) *netbox {
 	}
 }
 
-func (netbox netbox) getManagingClusterIDS(ctx context.Context) ([]gonetbox.Cluster, error) {
+func (netbox netbox) getManagingCluster(ctx context.Context) ([]gonetbox.Cluster, error) {
 	// TODO: get rid of limit
 	clusterList, _, err := netbox.
 		VirtualizationAPI.
@@ -32,16 +33,17 @@ func (netbox netbox) getManagingClusterIDS(ctx context.Context) ([]gonetbox.Clus
 }
 
 func (netbox netbox) getManagingVirtualMachines(ctx context.Context, clusters []gonetbox.Cluster) ([]gonetbox.VirtualMachineWithConfigContext, error) {
-	clusterIDs := make([]int32, 0, len(clusters))
+	clusterIDs := make([]*int32, 0, len(clusters))
 	for _, cluster := range clusters {
-		clusterIDs = append(clusterIDs, cluster.GetId())
+		id := cluster.GetId()
+		clusterIDs = append(clusterIDs, &id)
 	}
 
 	// TODO: get rid of limit
 	virtualMachines, _, err := netbox.
 		VirtualizationAPI.
 		VirtualizationVirtualMachinesList(ctx).
-		ClusterGroupId(clusterIDs).
+		ClusterId(clusterIDs).
 		Limit(100).
 		Execute()
 	if err != nil {
@@ -83,7 +85,7 @@ func (netbox netbox) getIPAddressesForInterface(ctx context.Context, interfaceID
 	ipAddresses, _, err := netbox.
 		IpamAPI.
 		IpamIpAddressesList(ctx).
-		InterfaceId([]int32{interfaceID}).
+		VminterfaceId([]int32{interfaceID}).
 		Limit(100).
 		Execute()
 	if err != nil {
@@ -94,13 +96,14 @@ func (netbox netbox) getIPAddressesForInterface(ctx context.Context, interfaceID
 }
 
 func (netbox netbox) GetManagingVirtualMachines(ctx context.Context) (map[ModelID]VirtualMachine, error) {
-	clusters, err := netbox.getManagingClusterIDS(ctx)
+	clusters, err := netbox.getManagingCluster(ctx)
 	if err != nil {
 		return nil, err
 	}
 
 	virtualMachines, err := netbox.getManagingVirtualMachines(ctx, clusters)
 	if err != nil {
+		fmt.Println("hier")
 		return nil, err
 	}
 

@@ -15,6 +15,7 @@ import (
 const defaultSetSize = 1_000
 
 type netboxClient interface {
+	GetManagingVirtualMachines(context.Context) (map[netbox.ModelID]netbox.VirtualMachine, error)
 }
 
 func ModelIDHash(modelID netbox.ModelID) uint64 {
@@ -24,11 +25,11 @@ func ModelIDHash(modelID netbox.ModelID) uint64 {
 type manager struct {
 	sync.Mutex
 
-	webhookEventBus <-chan netbox.WebhookEvent
-	updatables      *hashset.Set[netbox.ModelID]
-	//netboxVirtualMachines map[netbox.ModelID]netbox.VirtualMachine
-	pveClient    *proxmox.Client
-	netboxClient netboxClient
+	webhookEventBus       <-chan netbox.WebhookEvent
+	updatables            *hashset.Set[netbox.ModelID]
+	netboxVirtualMachines map[netbox.ModelID]netbox.VirtualMachine
+	pveClient             *proxmox.Client
+	netboxClient          netboxClient
 }
 
 func New(webhookEventBus <-chan netbox.WebhookEvent, pveClient *proxmox.Client, netboxClient netboxClient) *manager {
@@ -45,13 +46,15 @@ func (r *manager) sync(ctx context.Context) error {
 	defer r.Unlock()
 	r.Lock()
 
-	//if r.updatables.Size() == 0 && len(r.netboxVirtualMachines) != 0 {
-	//	return nil
-	//}
+	if r.updatables.Size() == 0 && len(r.netboxVirtualMachines) != 0 {
+		return nil
+	}
 
 	if err := r.updateNetboxVirtualMachines(ctx); err != nil {
 		return err
 	}
+
+	fmt.Println(r.netboxVirtualMachines)
 
 	// TODO: loop through updatables, check validaty, update proxmox accordingly
 	//r.updatables.Each(func(id netbox.ModelID) {
@@ -94,17 +97,12 @@ func (r *manager) sync(ctx context.Context) error {
 }
 
 func (r *manager) updateNetboxVirtualMachines(ctx context.Context) error {
-	//clear(r.netboxVirtualMachines)
+	netboxVirtualMachines, err := r.netboxClient.GetManagingVirtualMachines(ctx)
+	if err != nil {
+		return err
+	}
 
-	//netboxVirtualMachines, err := netbox.GetVirtualMachines(ctx, r.config.client)
-	//if err != nil {
-	//	return err
-	//}
-
-	//for _, vm := range netboxVirtualMachines.Virtual_machine_list {
-	//	netboxVM := netbox.NewVirtualMachine(vm)
-	//	r.netboxVirtualMachines[netboxVM.ID] = netboxVM
-	//}
+	r.netboxVirtualMachines = netboxVirtualMachines
 
 	return nil
 }

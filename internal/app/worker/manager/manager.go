@@ -3,7 +3,6 @@ package manager
 import (
 	"context"
 	"fmt"
-	"slices"
 	"sync"
 	"time"
 
@@ -13,12 +12,12 @@ import (
 	"github.com/zyedidia/generic/hashset"
 )
 
+//go:generate go run gen.go
+
 const defaultSetSize = 1_000
 
 type netboxClient interface {
 	GetManagingVirtualMachines(context.Context) (map[netbox.ModelID]netbox.VirtualMachine, error)
-	AllModelNames() []netbox.ModelName
-	HasComponent(netbox.VirtualMachine, netbox.ModelName, netbox.ModelID) bool
 }
 
 func ModelIDHash(modelID netbox.ModelID) uint64 {
@@ -37,11 +36,11 @@ type manager struct {
 
 func New(webhookEventBus <-chan netbox.WebhookEvent, pveClient *proxmox.Client, netboxClient netboxClient) *manager {
 	return &manager{
-		webhookEventBus: webhookEventBus,
-		updatables:      hashset.New[netbox.ModelID](defaultSetSize, g.Equals, ModelIDHash),
-		//	netboxVirtualMachines: make(map[netbox.ModelID]netbox.VirtualMachine),
-		pveClient:    pveClient,
-		netboxClient: netboxClient,
+		webhookEventBus:       webhookEventBus,
+		updatables:            hashset.New[netbox.ModelID](defaultSetSize, g.Equals, ModelIDHash),
+		netboxVirtualMachines: make(map[netbox.ModelID]netbox.VirtualMachine),
+		pveClient:             pveClient,
+		netboxClient:          netboxClient,
 	}
 }
 
@@ -58,6 +57,7 @@ func (r *manager) sync(ctx context.Context) error {
 	}
 
 	fmt.Println(r.netboxVirtualMachines)
+	fmt.Println(r.updatables.Size())
 
 	// TODO: loop through updatables, check validaty, update proxmox accordingly
 	//r.updatables.Each(func(id netbox.ModelID) {
@@ -111,6 +111,8 @@ func (r *manager) updateNetboxVirtualMachines(ctx context.Context) error {
 }
 
 func (r *manager) Run(ctx context.Context) error {
+	fmt.Println(allModelNames)
+
 	err := r.sync(ctx)
 	if err != nil {
 		return err
@@ -127,49 +129,66 @@ LOOP:
 		case <-syncTicker.C:
 			r.sync(ctx)
 		case event := <-r.webhookEventBus:
-			r.process(event)
+			r.processEvent(event)
 		}
 	}
 
 	return nil
 }
 
-func (r *manager) process(event netbox.WebhookEvent) {
+func (r *manager) processCreateEvent(event netbox.WebhookEvent) {
+	//if !slices.Contains(allModelNames(), event.ModelName) {
+	//	return
+	//}
+	r.Lock()
 	defer r.Unlock()
 
-	fmt.Printf("%s %s %d\n\r", event.EventType, event.ModelName, event.ModelID)
-
-	if event.EventType == netbox.EventCreated && slices.Contains(netbox.AllModelNames(), event.ModelName) {
-		r.Lock()
-		for id := range r.netboxVirtualMachines {
-			r.updatables.Put(id)
-		}
-		return
+	for id := range r.netboxVirtualMachines {
+		r.updatables.Put(id)
 	}
+}
+
+func (r *manager) processUpdateOrDeleteEvent(event netbox.WebhookEvent) {
+	r.Lock()
+	defer r.Unlock()
 
 	wg := sync.WaitGroup{}
 	wg.Add(len(r.netboxVirtualMachines))
 	updatables := make(chan netbox.ModelID, len(r.netboxVirtualMachines))
 
-	for id, vm := range r.netboxVirtualMachines {
-		// TODO: there is something better for this
-		myVM := vm
-		myID := id
-		go func() {
-			defer wg.Done()
-			if r.netboxClient.HasComponent(myVM, event.ModelName, event.ModelID) {
-				updatables <- myID
-			}
-		}()
-	}
+	//for id, vm := range r.netboxVirtualMachines {
+	//	if event.ModelID == id {
+	//		updatables <- id
+	//		return
+	//	}
+	//	// TODO: there is something better for this
+	//	//myVM := vm
+	//	//myID := id
+	//	go func() {
+	//		defer wg.Done()
+	//		//if hasComponent(myVM, event.ModelName, event.ModelID) {
+	//		//	updatables <- myID
+	//		//}
+	//	}()
+	//}
 
 	wg.Wait()
 	close(updatables)
 
-	r.Lock()
 	for id := range updatables {
 		r.updatables.Put(id)
 	}
+}
+
+func (r *manager) processEvent(event netbox.WebhookEvent) {
+	fmt.Printf("%s %s %d\n\r", event.EventType, event.ModelName, event.ModelID)
+
+	if event.EventType == netbox.EventCreated {
+		r.processCreateEvent(event)
+		return
+	}
+
+	r.processUpdateOrDeleteEvent(event)
 }
 
 func (r *manager) Close() error {

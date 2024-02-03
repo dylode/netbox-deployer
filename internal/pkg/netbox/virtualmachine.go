@@ -6,8 +6,8 @@ import (
 	gonetbox "github.com/netbox-community/go-netbox/v3"
 )
 
-func newVMComponent[T any](id int32, component T) virtualMachineComponent[T] {
-	return virtualMachineComponent[T]{
+func newVMComponent[T any](id int32, component T) VirtualMachineComponent[T] {
+	return VirtualMachineComponent[T]{
 		ID:   ModelID(id),
 		Data: component,
 	}
@@ -35,14 +35,14 @@ func (netbox netbox) newVirtualMachine(ctx context.Context, root gonetbox.Virtua
 			return vm, err
 		}
 
-		ipAddressesInterface := []virtualMachineComponent[interfaceIPAddress]{}
+		ipAddressesInterface := []VirtualMachineComponent[InterfaceIPAddress]{}
 		for _, ipAddress := range ipAddresses {
-			ipAddressesInterface = append(ipAddressesInterface, newVMComponent[interfaceIPAddress](ipAddress.GetId(), interfaceIPAddress{
+			ipAddressesInterface = append(ipAddressesInterface, newVMComponent[InterfaceIPAddress](ipAddress.GetId(), InterfaceIPAddress{
 				Address: ipAddress.GetAddress(),
 			}))
 		}
 
-		vm.Interfaces = append(vm.Interfaces, newVMComponent[virtualMachineInterface](vmInterface.GetId(), virtualMachineInterface{
+		vm.Interfaces = append(vm.Interfaces, newVMComponent[VirtualMachineInterface](vmInterface.GetId(), VirtualMachineInterface{
 			VID:         vmInterface.GetUntaggedVlan().Vid,
 			MacAddress:  vmInterface.GetMacAddress(),
 			IPAddresses: ipAddressesInterface,
@@ -55,7 +55,7 @@ func (netbox netbox) newVirtualMachine(ctx context.Context, root gonetbox.Virtua
 	}
 
 	for _, disk := range vmDisks {
-		vm.Disks = append(vm.Disks, newVMComponent[virtualMachineDisk](disk.GetId(), virtualMachineDisk{
+		vm.Disks = append(vm.Disks, newVMComponent[VirtualMachineDisk](disk.GetId(), VirtualMachineDisk{
 			Name: disk.GetName(),
 			Size: uint64(disk.GetSize()),
 		}))

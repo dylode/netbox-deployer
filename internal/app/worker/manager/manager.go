@@ -3,6 +3,7 @@ package manager
 import (
 	"context"
 	"fmt"
+	"slices"
 	"sync"
 	"time"
 
@@ -111,8 +112,6 @@ func (r *manager) updateNetboxVirtualMachines(ctx context.Context) error {
 }
 
 func (r *manager) Run(ctx context.Context) error {
-	fmt.Println(allModelNames)
-
 	err := r.sync(ctx)
 	if err != nil {
 		return err
@@ -137,9 +136,9 @@ LOOP:
 }
 
 func (r *manager) processCreateEvent(event netbox.WebhookEvent) {
-	//if !slices.Contains(allModelNames(), event.ModelName) {
-	//	return
-	//}
+	if !slices.Contains(allNetboxModelNames, event.ModelName) {
+		return
+	}
 	r.Lock()
 	defer r.Unlock()
 

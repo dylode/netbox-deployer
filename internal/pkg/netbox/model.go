@@ -18,22 +18,22 @@ type WebhookEvent struct {
 	ModelID   ModelID   `json:"id"`
 }
 
-type virtualMachineComponent[T any] struct {
+type VirtualMachineComponent[T any] struct {
 	ID   ModelID
 	Data T
 }
 
-type interfaceIPAddress struct {
+type InterfaceIPAddress struct {
 	Address string `model:"ipaddress"`
 }
 
-type virtualMachineInterface struct {
-	IPAddresses []virtualMachineComponent[interfaceIPAddress] `model:"ipaddress"`
+type VirtualMachineInterface struct {
+	IPAddresses []VirtualMachineComponent[InterfaceIPAddress] `model:"ipaddress"`
 	VID         int32                                         `model:"vlan"`
 	MacAddress  string                                        `model:"vminterface"`
 }
 
-type virtualMachineDisk struct {
+type VirtualMachineDisk struct {
 	Name string
 	Size uint64
 }
@@ -42,7 +42,7 @@ type VirtualMachine struct {
 	Status     string                                             `model:"virtualmachine"`
 	CPUs       uint                                               `model:"virtualmachine"`
 	Memory     uint64                                             `model:"virtualmachine"`
-	Tags       []virtualMachineComponent[string]                  `model:"tag"`
-	Interfaces []virtualMachineComponent[virtualMachineInterface] `model:"vminterface"`
-	Disks      []virtualMachineComponent[virtualMachineDisk]      `model:"vmdisk"`
+	Tags       []VirtualMachineComponent[string]                  `model:"tag"`
+	Interfaces []VirtualMachineComponent[VirtualMachineInterface] `model:"vminterface"`
+	Disks      []VirtualMachineComponent[VirtualMachineDisk]      `model:"vmdisk"`
 }

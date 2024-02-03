@@ -5,12 +5,13 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"html/template"
 	"log"
 	"os"
 	"reflect"
+	"text/template"
 
 	"dylaan.nl/netbox-deployer/internal/pkg/netbox"
+	"github.com/gookit/goutil/dump"
 )
 
 const outputName = "detector_gen.go"
@@ -22,7 +23,9 @@ func main() {
 	fmt.Fprint(&buf, "package manager\n\n")
 	fmt.Fprint(&buf, "import \"dylaan.nl/netbox-deployer/internal/pkg/netbox\"\n")
 
-	genAllModelNames(&buf)
+	//genAllModelNames(&buf)
+	fmt.Fprint(&buf, "\n")
+	genHasComponent(&buf)
 
 	err := os.WriteFile(outputName, buf.Bytes(), 0644)
 	if err != nil {
@@ -76,10 +79,10 @@ func allModelNames() []string {
 }
 
 var allModelNamesTemplate = `
-var allModelNames []netbox.ModelName
+var allNetboxModelNames []netbox.ModelName
 
 func init() {
-	allModelNames = []netbox.ModelName {
+	allNetboxModelNames = []netbox.ModelName {
 		{{- range . }}
 		netbox.ModelName("{{ . }}"),
 		{{- end }}
@@ -96,4 +99,125 @@ func genAllModelNames(buf *bytes.Buffer) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+var hasComponentTemplate = `
+func hasComponent(vm netbox.VirtualMachine, event netbox.WebhookEvent) bool {
+	{{ renderChildren . }}
+	return false
+}
+`
+
+var hasComponentRenderChildrenTemplate = `
+{{- range .Children -}}
+{{- if .Slice }}
+    for _, {{ .Name }} := range {{ $.Name }}.{{.Name}} {
+        {{- renderChildren . }}
+    }
+{{ end -}}
+{{ if eq .Name "Data" -}}
+    {{- renderChildren . }}
+{{- end -}}
+{{- if eq .Name "ID" }}
+    if event.ModelName == "{{ $.Model }}" && event.ModelID == {{ $.Name }}.ID  {
+        return true
+    }
+{{ end -}}
+{{- end -}}
+`
+
+func genHasComponent(buf *bytes.Buffer) {
+	var cTmpl *template.Template
+	var renderChildren func(*node) string
+	renderChildren = func(data *node) string {
+		var buf2 bytes.Buffer
+		err := cTmpl.Execute(&buf2, data)
+		if err != nil {
+			panic(err)
+		}
+		return buf2.String()
+	}
+
+	cTmpl, err := template.
+		New("renderChildren").
+		Funcs(template.FuncMap{
+			"renderChildren": renderChildren,
+		}).
+		Parse(hasComponentRenderChildrenTemplate)
+
+	if err != nil {
+		panic(err)
+	}
+
+	tmpl, err := template.
+		New("hasComponent").
+		Funcs(template.FuncMap{
+			"renderChildren": renderChildren,
+		}).
+		Parse(hasComponentTemplate)
+	if err != nil {
+		panic(err)
+	}
+
+	var buf3 bytes.Buffer
+	err = tmpl.Execute(&buf3, getVirtualMachineComponents())
+	if err != nil {
+		panic(err)
+	}
+
+	buf.Write(buf3.Bytes())
+}
+
+type node struct {
+	Name     string
+	Slice    bool
+	Model    string
+	Children []*node
+}
+
+func getVirtualMachineComponents() *node {
+	var walk func(t reflect.Type, parent *node)
+	walk = func(t reflect.Type, parent *node) {
+		for i := 0; i < t.NumField(); i++ {
+			field := t.Field(i)
+			kind := field.Type.Kind()
+
+			if kind == reflect.Struct {
+				child := &node{
+					Name:  field.Name,
+					Slice: false,
+					Model: field.Tag.Get("model"),
+				}
+				walk(field.Type, child)
+				parent.Children = append(parent.Children, child)
+				continue
+			}
+
+			if kind == reflect.Slice {
+				child := &node{
+					Name:  field.Name,
+					Slice: true,
+					Model: field.Tag.Get("model"),
+				}
+				walk(field.Type.Elem(), child)
+				parent.Children = append(parent.Children, child)
+			}
+
+			if field.Name != "ID" {
+				continue
+			}
+
+			parent.Children = append(parent.Children, &node{
+				Name:  field.Name,
+				Slice: false,
+				Model: field.Tag.Get("model"),
+			})
+		}
+	}
+
+	root := &node{Name: "vm"}
+	walk(reflect.ValueOf(netbox.VirtualMachine{}).Type(), root)
+
+	dump.P(root)
+	return root
 }

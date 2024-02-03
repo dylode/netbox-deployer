@@ -23,7 +23,7 @@ func main() {
 	fmt.Fprint(&buf, "package manager\n\n")
 	fmt.Fprint(&buf, "import \"dylaan.nl/netbox-deployer/internal/pkg/netbox\"\n")
 
-	//genAllModelNames(&buf)
+	genAllModelNames(&buf)
 	fmt.Fprint(&buf, "\n")
 	genHasComponent(&buf)
 

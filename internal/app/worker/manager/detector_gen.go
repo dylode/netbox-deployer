@@ -4,6 +4,16 @@ package manager
 
 import "dylaan.nl/netbox-deployer/internal/pkg/netbox"
 
+var allNetboxModelNames []netbox.ModelName
+
+func init() {
+	allNetboxModelNames = []netbox.ModelName {
+		netbox.ModelName("virtualmachine"),
+		netbox.ModelName("tag"),
+		netbox.ModelName("vminterface"),
+		netbox.ModelName("vmdisk"),
+	}
+}
 
 func hasComponent(vm netbox.VirtualMachine, event netbox.WebhookEvent) bool {
 	

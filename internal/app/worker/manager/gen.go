@@ -102,58 +102,25 @@ func genAllModelNames(buf *bytes.Buffer) {
 }
 
 var hasComponentTemplate = `
+{{- define "node" -}}
+{{ if .Children }}
+{{ range .Children }}
+	{{ template "node" . }}
+{{ end }}
+{{ else }}
+{{ .Name }}
+{{ end }}
+{{ end }}
+{{ end }}
 func hasComponent(vm netbox.VirtualMachine, event netbox.WebhookEvent) bool {
-	{{ renderChildren . }}
+	{{ template "node" . }}
 	return false
 }
 `
 
-var hasComponentRenderChildrenTemplate = `
-{{- range .Children -}}
-{{- if .Slice }}
-    for _, {{ .Name }} := range {{ $.Name }}.{{.Name}} {
-        {{- renderChildren . }}
-    }
-{{ end -}}
-{{ if eq .Name "Data" -}}
-    {{- renderChildren . }}
-{{- end -}}
-{{- if eq .Name "ID" }}
-    if event.ModelName == "{{ $.Model }}" && event.ModelID == {{ $.Name }}.ID  {
-        return true
-    }
-{{ end -}}
-{{- end -}}
-`
-
 func genHasComponent(buf *bytes.Buffer) {
-	var cTmpl *template.Template
-	var renderChildren func(*node) string
-	renderChildren = func(data *node) string {
-		var buf2 bytes.Buffer
-		err := cTmpl.Execute(&buf2, data)
-		if err != nil {
-			panic(err)
-		}
-		return buf2.String()
-	}
-
-	cTmpl, err := template.
-		New("renderChildren").
-		Funcs(template.FuncMap{
-			"renderChildren": renderChildren,
-		}).
-		Parse(hasComponentRenderChildrenTemplate)
-
-	if err != nil {
-		panic(err)
-	}
-
 	tmpl, err := template.
 		New("hasComponent").
-		Funcs(template.FuncMap{
-			"renderChildren": renderChildren,
-		}).
 		Parse(hasComponentTemplate)
 	if err != nil {
 		panic(err)
@@ -169,10 +136,14 @@ func genHasComponent(buf *bytes.Buffer) {
 }
 
 type node struct {
-	Name     string
-	Slice    bool
+	Root  bool
+	Slice bool
+	Name  string
+	//Slice      bool
+	//Struct     bool
 	Model    string
 	Children []*node
+	//ForLoopVar string
 }
 
 func getVirtualMachineComponents() *node {
@@ -180,42 +151,72 @@ func getVirtualMachineComponents() *node {
 	walk = func(t reflect.Type, parent *node) {
 		for i := 0; i < t.NumField(); i++ {
 			field := t.Field(i)
-			kind := field.Type.Kind()
 
-			if kind == reflect.Struct {
-				child := &node{
-					Name:  field.Name,
-					Slice: false,
-					Model: field.Tag.Get("model"),
-				}
-				walk(field.Type, child)
-				parent.Children = append(parent.Children, child)
-				continue
-			}
-
-			if kind == reflect.Slice {
+			switch field.Type.Kind() {
+			case reflect.Slice:
 				child := &node{
 					Name:  field.Name,
 					Slice: true,
-					Model: field.Tag.Get("model"),
 				}
 				walk(field.Type.Elem(), child)
 				parent.Children = append(parent.Children, child)
+			case reflect.Struct:
+				child := &node{
+					Name: field.Name,
+				}
+				walk(field.Type, child)
+				parent.Children = append(parent.Children, child)
+			default:
+				if field.Name != "ID" {
+					continue
+				}
+				parent.Children = append(parent.Children, &node{
+					Name:  field.Name,
+					Model: field.Tag.Get("model"),
+				})
 			}
 
-			if field.Name != "ID" {
-				continue
-			}
+			//if kind == reflect.Struct {
+			//	child := &node{
+			//		Name:   field.Name,
+			//		Struct: true,
+			//		Model:  field.Tag.Get("model"),
+			//	}
+			//	if parent.Slice {
+			//		child.ForLoopVar = parent.ForLoopVar
+			//	}
+			//	walk(field.Type, child)
+			//	parent.Children = append(parent.Children, child)
+			//	continue
+			//}
 
-			parent.Children = append(parent.Children, &node{
-				Name:  field.Name,
-				Slice: false,
-				Model: field.Tag.Get("model"),
-			})
+			//if kind == reflect.Slice {
+			//	child := &node{
+			//		Name:       field.Name,
+			//		Slice:      true,
+			//		Model:      field.Tag.Get("model"),
+			//		ForLoopVar: field.Name,
+			//	}
+			//	if parent.Slice {
+			//		child.ForLoopVar = parent.ForLoopVar
+			//	}
+			//	walk(field.Type.Elem(), child)
+			//	parent.Children = append(parent.Children, child)
+			//}
+
+			//if field.Name != "ID" {
+			//	continue
+			//}
+
+			//parent.Children = append(parent.Children, &node{
+			//	Name:  field.Name,
+			//	Slice: false,
+			//	Model: field.Tag.Get("model"),
+			//})
 		}
 	}
 
-	root := &node{Name: "vm"}
+	root := &node{Root: true, Name: "vm"}
 	walk(reflect.ValueOf(netbox.VirtualMachine{}).Type(), root)
 
 	dump.P(root)

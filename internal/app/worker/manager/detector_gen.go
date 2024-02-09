@@ -8,44 +8,33 @@ var allNetboxModelNames []netbox.ModelName
 
 func init() {
 	allNetboxModelNames = []netbox.ModelName {
-		netbox.ModelName("virtualmachine"),
-		netbox.ModelName("tag"),
 		netbox.ModelName("vminterface"),
 		netbox.ModelName("vmdisk"),
+		netbox.ModelName("virtualmachine"),
+		netbox.ModelName("tag"),
 	}
 }
 
 func hasComponent(vm netbox.VirtualMachine, event netbox.WebhookEvent) bool {
-	for _, Tags := range vm.Tags {
-			
-	if event.ModelName == "tag" && event.ModelID == Tags.ID  {
-		return true
-	}
-	}
-
-	for _, Interfaces := range vm.Interfaces {
-			
-	if event.ModelName == "vminterface" && event.ModelID == Interfaces.ID  {
-		return true
-	}
-			
-	for _, IPAddresses := range Interfaces.Data.IPAddresses {
-			
-	if event.ModelName == "ipaddress" && event.ModelID == IPAddresses.ID  {
-		return true
-	}
-			
-	}
-
-	}
-
-	for _, Disks := range vm.Disks {
-			
-	if event.ModelName == "vmdisk" && event.ModelID == Disks.ID  {
-		return true
-	}
-			
-	}
-
+for _, Tags := range vm.Tags {
+if event.ModelName == "tag" && event.ModelID == Tags.ID  {
+	return true
+}
+}
+for _, Interfaces := range vm.Interfaces {
+if event.ModelName == "vminterface" && event.ModelID == Interfaces.ID  {
+	return true
+}
+for _, IPAddresses := range Interfaces.Data.IPAddresses {
+if event.ModelName == "ipaddress" && event.ModelID == IPAddresses.ID  {
+	return true
+}
+}
+}
+for _, Disks := range vm.Disks {
+if event.ModelName == "vmdisk" && event.ModelID == Disks.ID  {
+	return true
+}
+}
 	return false
 }

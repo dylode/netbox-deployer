@@ -109,17 +109,17 @@ var hasComponentTemplate = `
 {{- if .Children -}}
 {{- range $child := .Children }}
 {{- if $child.Slice }}
-	for _, {{ $child.Name }} := range {{ .Path }} {
-		{{- range $subChild := $child.Children }}
-			{{ template "node" $subChild }}
-		{{- end }}
-	}
-{{ end -}}
+for _, {{ $child.Name }} := range {{ .Path }} {
+	{{- range $subChild := $child.Children }}
+		{{- template "node" $subChild }}
+	{{- end }}
+}
+{{- end -}}
 {{- end -}}
 {{- else if eq .Name "ID" }}
-	if event.ModelName == "{{ .Model }}" && event.ModelID == {{ .Parent.Name }}.ID  {
-		return true
-	}
+if event.ModelName == "{{ .Model }}" && event.ModelID == {{ .Parent.Name }}.ID  {
+	return true
+}
 {{- end -}}
 {{- end -}}
 func hasComponent(vm netbox.VirtualMachine, event netbox.WebhookEvent) bool {

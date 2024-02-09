@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"dylaan.nl/netbox-deployer/internal/pkg/netbox"
+	"github.com/gookit/goutil/dump"
 	"github.com/luthermonson/go-proxmox"
 	g "github.com/zyedidia/generic"
 	"github.com/zyedidia/generic/hashset"
@@ -108,6 +109,7 @@ func (r *manager) updateNetboxVirtualMachines(ctx context.Context) error {
 
 	r.netboxVirtualMachines = netboxVirtualMachines
 
+	dump.P(r.netboxVirtualMachines)
 	return nil
 }
 
@@ -155,21 +157,21 @@ func (r *manager) processUpdateOrDeleteEvent(event netbox.WebhookEvent) {
 	wg.Add(len(r.netboxVirtualMachines))
 	updatables := make(chan netbox.ModelID, len(r.netboxVirtualMachines))
 
-	//for id, vm := range r.netboxVirtualMachines {
-	//	if event.ModelID == id {
-	//		updatables <- id
-	//		return
-	//	}
-	//	// TODO: there is something better for this
-	//	//myVM := vm
-	//	//myID := id
-	//	go func() {
-	//		defer wg.Done()
-	//		//if hasComponent(myVM, event.ModelName, event.ModelID) {
-	//		//	updatables <- myID
-	//		//}
-	//	}()
-	//}
+	for id, vm := range r.netboxVirtualMachines {
+		if event.ModelName == "virtualmachine" && event.ModelID == id {
+			updatables <- id
+			return
+		}
+		id := id
+		vm := vm
+		go func() {
+			defer wg.Done()
+			if hasComponent(vm, event) {
+				fmt.Println(id)
+				updatables <- id
+			}
+		}()
+	}
 
 	wg.Wait()
 	close(updatables)

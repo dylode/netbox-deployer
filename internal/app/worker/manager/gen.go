@@ -115,9 +115,14 @@ for _, {{ $child.Name }} := range {{ .Path }} {
 	{{- end }}
 }
 {{- end -}}
+{{- if $child.Struct }}
+	{{- range $subChild := $child.Children }}
+		{{- template "node" $subChild }}
+	{{- end }}
+{{- end -}}
 {{- end -}}
 {{- else if eq .Name "ID" }}
-if event.ModelName == "{{ .Model }}" && event.ModelID == {{ .Parent.Name }}.ID  {
+if event.ModelName == "{{ .Model }}" && event.ModelID == {{ .Path }} {
 	return true
 }
 {{- end -}}
@@ -148,6 +153,7 @@ func genHasComponent(buf *bytes.Buffer) {
 type node struct {
 	Root     bool
 	Slice    bool
+	Struct   bool
 	Name     string
 	Model    string
 	Parent   *node
@@ -176,6 +182,7 @@ func getVirtualMachineComponents() *node {
 			case reflect.Struct:
 				child := &node{
 					Name:   field.Name,
+					Struct: true,
 					Parent: parent,
 					Model:  field.Tag.Get("model"),
 					Path:   fmt.Sprintf("%s.%s", parent.Path, field.Name),

@@ -42,8 +42,12 @@ func (netbox netbox) newVirtualMachine(ctx context.Context, root gonetbox.Virtua
 			}))
 		}
 
+		vlan := vmInterface.GetUntaggedVlan()
+
 		vm.Interfaces = append(vm.Interfaces, newVMComponent[VirtualMachineInterface](vmInterface.GetId(), VirtualMachineInterface{
-			VID:         vmInterface.GetUntaggedVlan().Vid,
+			VLAN: newVMComponent[InterfaceVLAN](vlan.GetId(), InterfaceVLAN{
+				VID: vlan.GetVid(),
+			}),
 			MacAddress:  vmInterface.GetMacAddress(),
 			IPAddresses: ipAddressesInterface,
 		}))

@@ -27,9 +27,13 @@ type InterfaceIPAddress struct {
 	Address string `model:"ipaddress"`
 }
 
+type InterfaceVLAN struct {
+	VID int32 `model:"vlan"`
+}
+
 type VirtualMachineInterface struct {
 	IPAddresses []VirtualMachineComponent[InterfaceIPAddress] `model:"ipaddress"`
-	VID         int32                                         `model:"vlan"`
+	VLAN        VirtualMachineComponent[InterfaceVLAN]        `model:"vlan"`
 	MacAddress  string                                        `model:"vminterface"`
 }
 

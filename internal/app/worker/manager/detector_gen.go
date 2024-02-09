@@ -2,37 +2,45 @@
 
 package manager
 
-import "dylaan.nl/netbox-deployer/internal/pkg/netbox"
+import (
+	"fmt"
+
+	"dylaan.nl/netbox-deployer/internal/pkg/netbox"
+)
 
 var allNetboxModelNames []netbox.ModelName
 
 func init() {
 	allNetboxModelNames = []netbox.ModelName {
-		netbox.ModelName("vminterface"),
 		netbox.ModelName("vmdisk"),
 		netbox.ModelName("virtualmachine"),
 		netbox.ModelName("tag"),
+		netbox.ModelName("vminterface"),
 	}
 }
 
 func hasComponent(vm netbox.VirtualMachine, event netbox.WebhookEvent) bool {
 for _, Tags := range vm.Tags {
-if event.ModelName == "tag" && event.ModelID == Tags.ID  {
+if event.ModelName == "tag" && event.ModelID == Tags.ID {
 	return true
 }
 }
 for _, Interfaces := range vm.Interfaces {
-if event.ModelName == "vminterface" && event.ModelID == Interfaces.ID  {
+if event.ModelName == "vminterface" && event.ModelID == Interfaces.ID {
 	return true
 }
 for _, IPAddresses := range Interfaces.Data.IPAddresses {
-if event.ModelName == "ipaddress" && event.ModelID == IPAddresses.ID  {
+if event.ModelName == "ipaddress" && event.ModelID == IPAddresses.ID {
 	return true
 }
 }
+fmt.Println(Interfaces.Data.VLAN)
+if event.ModelName == "vlan" && event.ModelID == Interfaces.Data.VLAN.ID {
+	return true
+}
 }
 for _, Disks := range vm.Disks {
-if event.ModelName == "vmdisk" && event.ModelID == Disks.ID  {
+if event.ModelName == "vmdisk" && event.ModelID == Disks.ID {
 	return true
 }
 }

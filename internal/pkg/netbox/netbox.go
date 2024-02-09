@@ -95,6 +95,27 @@ func (netbox netbox) getIPAddressesForInterface(ctx context.Context, interfaceID
 	return ipAddresses.GetResults(), nil
 }
 
+func (netbox netbox) SetVirtualMachinePlanned(ctx context.Context, vmID int32) error {
+	status := gonetbox.MODULESTATUSVALUE_PLANNED
+	_, _, err := netbox.
+		VirtualizationAPI.
+		VirtualizationVirtualMachinesPartialUpdate(ctx, vmID).
+		PatchedWritableVirtualMachineWithConfigContextRequest(gonetbox.PatchedWritableVirtualMachineWithConfigContextRequest{
+			Status: &status,
+		}).
+		Execute()
+	return err
+}
+
+func (netbox netbox) WriteVirtualMachineJournal(ctx context.Context, vmID int32, comment string) error {
+	_, _, err := netbox.
+		ExtrasAPI.
+		ExtrasJournalEntriesCreate(ctx).
+		WritableJournalEntryRequest(*gonetbox.NewWritableJournalEntryRequest("virtualization.virtualmachine", int64(vmID), comment)).
+		Execute()
+	return err
+}
+
 func (netbox netbox) GetManagingVirtualMachines(ctx context.Context) (map[ModelID]VirtualMachine, error) {
 	clusters, err := netbox.getManagingCluster(ctx)
 	if err != nil {

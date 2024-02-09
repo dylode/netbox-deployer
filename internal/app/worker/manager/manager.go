@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 	"slices"
+	"strings"
 	"sync"
 	"time"
 
 	"dylaan.nl/netbox-deployer/internal/pkg/netbox"
-	"github.com/gookit/goutil/dump"
 	"github.com/luthermonson/go-proxmox"
 	g "github.com/zyedidia/generic"
 	"github.com/zyedidia/generic/hashset"
@@ -20,6 +20,8 @@ const defaultSetSize = 1_000
 
 type netboxClient interface {
 	GetManagingVirtualMachines(context.Context) (map[netbox.ModelID]netbox.VirtualMachine, error)
+	SetVirtualMachinePlanned(context.Context, int32) error
+	WriteVirtualMachineJournal(context.Context, int32, string) error
 }
 
 func ModelIDHash(modelID netbox.ModelID) uint64 {
@@ -58,43 +60,25 @@ func (r *manager) sync(ctx context.Context) error {
 		return err
 	}
 
-	fmt.Println(r.netboxVirtualMachines)
-	fmt.Println(r.updatables.Size())
+	r.updatables.Each(func(id netbox.ModelID) {
+		vm, ok := r.netboxVirtualMachines[id]
+		if !ok {
+			return
+		}
 
-	// TODO: loop through updatables, check validaty, update proxmox accordingly
-	//r.updatables.Each(func(id netbox.ModelID) {
-	//	fmt.Printf("updating virtual machine %d\n\r", id)
+		if vm.Status != "active" {
+			return
+		}
 
-	//	vm := r.netboxVirtualMachines[id]
-	//	vmFlat := vm.Flat()
+		errors := r.validationCheck(vm)
+		if len(errors) != 0 {
+			_ = r.netboxClient.SetVirtualMachinePlanned(ctx, int32(id))
+			_ = r.netboxClient.WriteVirtualMachineJournal(ctx, int32(id), fmt.Sprintf("Reverted back to status Planned due to: \n\r%s", strings.Join(errors, "\n\r")))
+			return
+		}
 
-	//	if vm.PveID != nil {
-
-	//		node, err := r.pveClient.Node(ctx, "pve01")
-	//		if err != nil {
-	//			panic(err)
-	//		}
-
-	//		pvevm, err := node.VirtualMachine(ctx, *vm.PveID)
-	//		if err != nil {
-	//			panic(err)
-	//		}
-
-	//		existingTags := strings.Split(pvevm.Tags, ";")
-	//		for _, t := range existingTags {
-	//			if !slices.Contains(vmFlat.Tags, t) {
-	//				pvevm.RemoveTag(ctx, t)
-	//			}
-	//		}
-
-	//		for _, t := range vmFlat.Tags {
-	//			if !slices.Contains(pvevm.VirtualMachineConfig.TagsSlice, t) {
-	//				pvevm.AddTag(ctx, t)
-	//			}
-	//		}
-
-	//	}
-	//})
+		fmt.Printf("vm %d is valid\n\r", id)
+	})
 
 	r.updatables.Clear()
 
@@ -108,8 +92,6 @@ func (r *manager) updateNetboxVirtualMachines(ctx context.Context) error {
 	}
 
 	r.netboxVirtualMachines = netboxVirtualMachines
-
-	dump.P(r.netboxVirtualMachines)
 	return nil
 }
 
@@ -153,21 +135,21 @@ func (r *manager) processUpdateOrDeleteEvent(event netbox.WebhookEvent) {
 	r.Lock()
 	defer r.Unlock()
 
+	if event.ModelName == "virtualmachine" {
+		r.updatables.Put(event.ModelID)
+		return
+	}
+
 	wg := sync.WaitGroup{}
 	wg.Add(len(r.netboxVirtualMachines))
 	updatables := make(chan netbox.ModelID, len(r.netboxVirtualMachines))
 
 	for id, vm := range r.netboxVirtualMachines {
-		if event.ModelName == "virtualmachine" && event.ModelID == id {
-			updatables <- id
-			return
-		}
 		id := id
 		vm := vm
 		go func() {
 			defer wg.Done()
 			if hasComponent(vm, event) {
-				fmt.Println(id)
 				updatables <- id
 			}
 		}()

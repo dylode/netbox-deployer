@@ -3,8 +3,6 @@
 package manager
 
 import (
-	"fmt"
-
 	"dylaan.nl/netbox-deployer/internal/pkg/netbox"
 )
 
@@ -34,7 +32,6 @@ if event.ModelName == "ipaddress" && event.ModelID == IPAddresses.ID {
 	return true
 }
 }
-fmt.Println(Interfaces.Data.VLAN)
 if event.ModelName == "vlan" && event.ModelID == Interfaces.Data.VLAN.ID {
 	return true
 }

@@ -24,7 +24,7 @@ func main() {
 	fmt.Fprint(&buf, "import \"dylaan.nl/netbox-deployer/internal/pkg/netbox\"\n")
 
 	genAllModelNames(&buf)
-	fmt.Fprint(&buf, "\n")
+	fmt.Fprint(&buf, "\n\n")
 	genHasComponent(&buf)
 
 	err := os.WriteFile(outputName, buf.Bytes(), 0644)
@@ -95,25 +95,35 @@ func genAllModelNames(buf *bytes.Buffer) {
 		panic(err)
 	}
 
-	err = tmpl.Execute(buf, allModelNames())
+	var tmplBuf bytes.Buffer
+	err = tmpl.Execute(&tmplBuf, allModelNames())
 	if err != nil {
 		panic(err)
 	}
+
+	buf.Write(tmplBuf.Bytes())
 }
 
 var hasComponentTemplate = `
 {{- define "node" -}}
-{{ if .Children }}
-{{ range .Children }}
-	{{ template "node" . }}
-{{ end }}
-{{ else }}
-{{ .Name }}
-{{ end }}
-{{ end }}
-{{ end }}
+{{- if .Children -}}
+{{- range $child := .Children }}
+{{- if $child.Slice }}
+	for _, {{ $child.Name }} := range {{ .Path }} {
+		{{- range $subChild := $child.Children }}
+			{{ template "node" $subChild }}
+		{{- end }}
+	}
+{{ end -}}
+{{- end -}}
+{{- else if eq .Name "ID" }}
+	if event.ModelName == "{{ .Model }}" && event.ModelID == {{ .Parent.Name }}.ID  {
+		return true
+	}
+{{- end -}}
+{{- end -}}
 func hasComponent(vm netbox.VirtualMachine, event netbox.WebhookEvent) bool {
-	{{ template "node" . }}
+	{{- template "node" . }}
 	return false
 }
 `
@@ -126,24 +136,23 @@ func genHasComponent(buf *bytes.Buffer) {
 		panic(err)
 	}
 
-	var buf3 bytes.Buffer
-	err = tmpl.Execute(&buf3, getVirtualMachineComponents())
+	var tmplBuf bytes.Buffer
+	err = tmpl.Execute(&tmplBuf, getVirtualMachineComponents())
 	if err != nil {
 		panic(err)
 	}
 
-	buf.Write(buf3.Bytes())
+	buf.Write(tmplBuf.Bytes())
 }
 
 type node struct {
-	Root  bool
-	Slice bool
-	Name  string
-	//Slice      bool
-	//Struct     bool
+	Root     bool
+	Slice    bool
+	Name     string
 	Model    string
+	Parent   *node
+	Path     string
 	Children []*node
-	//ForLoopVar string
 }
 
 func getVirtualMachineComponents() *node {
@@ -155,14 +164,25 @@ func getVirtualMachineComponents() *node {
 			switch field.Type.Kind() {
 			case reflect.Slice:
 				child := &node{
-					Name:  field.Name,
-					Slice: true,
+					Name:   field.Name,
+					Slice:  true,
+					Parent: parent,
+					Model:  field.Tag.Get("model"),
+					Path:   fmt.Sprintf("%s.%s", parent.Path, field.Name),
 				}
+
 				walk(field.Type.Elem(), child)
 				parent.Children = append(parent.Children, child)
 			case reflect.Struct:
 				child := &node{
-					Name: field.Name,
+					Name:   field.Name,
+					Parent: parent,
+					Model:  field.Tag.Get("model"),
+					Path:   fmt.Sprintf("%s.%s", parent.Path, field.Name),
+				}
+
+				if parent.Slice {
+					child.Path = fmt.Sprintf("%s.%s", parent.Name, field.Name)
 				}
 				walk(field.Type, child)
 				parent.Children = append(parent.Children, child)
@@ -170,53 +190,23 @@ func getVirtualMachineComponents() *node {
 				if field.Name != "ID" {
 					continue
 				}
-				parent.Children = append(parent.Children, &node{
-					Name:  field.Name,
-					Model: field.Tag.Get("model"),
-				})
+
+				child := &node{
+					Name:   field.Name,
+					Parent: parent,
+					Model:  parent.Model,
+					Path:   fmt.Sprintf("%s.%s", parent.Path, field.Name),
+				}
+				if parent.Slice {
+					child.Path = fmt.Sprintf("%s.%s", parent.Name, field.Name)
+				}
+
+				parent.Children = append(parent.Children, child)
 			}
-
-			//if kind == reflect.Struct {
-			//	child := &node{
-			//		Name:   field.Name,
-			//		Struct: true,
-			//		Model:  field.Tag.Get("model"),
-			//	}
-			//	if parent.Slice {
-			//		child.ForLoopVar = parent.ForLoopVar
-			//	}
-			//	walk(field.Type, child)
-			//	parent.Children = append(parent.Children, child)
-			//	continue
-			//}
-
-			//if kind == reflect.Slice {
-			//	child := &node{
-			//		Name:       field.Name,
-			//		Slice:      true,
-			//		Model:      field.Tag.Get("model"),
-			//		ForLoopVar: field.Name,
-			//	}
-			//	if parent.Slice {
-			//		child.ForLoopVar = parent.ForLoopVar
-			//	}
-			//	walk(field.Type.Elem(), child)
-			//	parent.Children = append(parent.Children, child)
-			//}
-
-			//if field.Name != "ID" {
-			//	continue
-			//}
-
-			//parent.Children = append(parent.Children, &node{
-			//	Name:  field.Name,
-			//	Slice: false,
-			//	Model: field.Tag.Get("model"),
-			//})
 		}
 	}
 
-	root := &node{Root: true, Name: "vm"}
+	root := &node{Root: true, Name: "vm", Path: "vm"}
 	walk(reflect.ValueOf(netbox.VirtualMachine{}).Type(), root)
 
 	dump.P(root)
